@@ -26,6 +26,7 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const 
   request = require('request'),
   express = require('express'),
+  path = require('path'),
   body_parser = require('body-parser'),
   app = express().use(body_parser.json()); // creates express http server
 
@@ -183,3 +184,8 @@ function callSendAPI(sender_psid, response) {
     }
   }); 
 }
+
+// Accepts GET requests at the / endpoint
+app.get('/:var(privacypolicy(.html)?)?', (req, res) => {
+  res.sendFile(path.join(__dirname, "privacypolicy.html"))
+})
