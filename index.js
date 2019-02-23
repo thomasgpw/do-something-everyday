@@ -28,6 +28,7 @@ const
   express = require('express'),
   path = require('path'),
   body_parser = require('body-parser'),
+  mongoose = require('mongoose'),
   app = express().use(body_parser.json()); // creates express http server
 
 // Sets server port and logs message on success
@@ -35,23 +36,25 @@ app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
 
 // Accepts POST requests at /webhook endpoint
 app.post('/webhook', (req, res) => {  
+  console.log("app.post unpacking")
 
   // Parse the request body from the POST
   let body = req.body;
-
+  console.log("req.body objecct", body)
   // Check the webhook event is from a Page subscription
   if (body.object === 'page') {
-
     body.entry.forEach(function(entry) {
+      console.log("body.entry.foreachentry", entry)
 
       // Gets the body of the webhook event
       let webhook_event = entry.messaging[0];
-      console.log(webhook_event);
+      console.log("entry.messaging list", entry.messaging)
+      console.log("webhook event object:",webhook_event);
 
 
       // Get the sender PSID
       let sender_psid = webhook_event.sender.id;
-      console.log('Sender ID: ' + sender_psid);
+      console.log('webhook event Sender ID: ' + sender_psid);
 
       // Check if the event is a message or postback and
       // pass the event to the appropriate handler function
@@ -75,7 +78,8 @@ app.post('/webhook', (req, res) => {
 
 // Accepts GET requests at the /webhook endpoint
 app.get('/webhook', (req, res) => {
-  
+  console.log("app.get at /webhook request object", req)
+
   /** UPDATE YOUR VERIFY TOKEN **/
   const VERIFY_TOKEN = process.env.VERIFICATION_TOKEN;
   
@@ -102,6 +106,7 @@ app.get('/webhook', (req, res) => {
 });
 
 function handleMessage(sender_psid, received_message) {
+  console.log("handleMessage received_message object", received_message)
   let response;
   
   // Checks if the message contains text
@@ -147,6 +152,7 @@ function handleMessage(sender_psid, received_message) {
 
 function handlePostback(sender_psid, received_postback) {
   console.log('ok')
+  console.log("handleMessage received_postback object", received_postback)
    let response;
   // Get the payload for the postback
   let payload = received_postback.payload;
@@ -162,6 +168,8 @@ function handlePostback(sender_psid, received_postback) {
 }
 
 function callSendAPI(sender_psid, response) {
+  console.log("callSendAPI response object", response)
+  
   // Construct the message body
   let request_body = {
     "recipient": {
@@ -186,6 +194,6 @@ function callSendAPI(sender_psid, response) {
 }
 
 // Accepts GET requests at the / endpoint
-app.get('/:var(privacypolicy(.html)?)?', (req, res) => {
+app.get('/:var(privacypolicy)?', (req, res) => {
   res.sendFile(path.join(__dirname, "privacypolicy.html"))
 })
