@@ -29,7 +29,7 @@ const
   path = require('path'),
   body_parser = require('body-parser'),
   mongoose = require('mongoose'),
-  textResponses = require('./text')
+  textResponses = require('./text'),
   app = express().use(body_parser.json()); // creates express http server
 
 // Sets server port and logs message on success
