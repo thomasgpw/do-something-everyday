@@ -150,10 +150,11 @@ function handlePostback(sender_psid, received_postback) {
   let response;
   // Get the payload for the postback
   let payload = received_postback.payload;
+  console.log("payload is " + payload)
   for(var i = 0; i < textResponses.length; i++) {
-    console.log(payload, textResponses[i].payload)
+    console.log("comparing payload to " + textResponses[i].payload)
     if (payload == textResponses[i].payload) {
-      console.log("response should be set equal to" + textResponses[i].response.text)
+      console.log("response should be set equal to " + textResponses[i].response.text)
       response = textResponses[i].response
     }
   }
@@ -167,7 +168,7 @@ function handlePostback(sender_psid, received_postback) {
   //   response = { "text": "Oops, try sending another image." }
   // }
   // // Send the message to acknowledge the postback
-  // callSendAPI(sender_psid, response);
+  callSendAPI(sender_psid, response);
 }
 
 function callSendAPI(sender_psid, response) {
