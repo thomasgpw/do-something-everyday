@@ -150,12 +150,11 @@ function handlePostback(sender_psid, received_postback) {
   let response;
   // Get the payload for the postback
   let payload = received_postback.payload;
-
-  if (payload) {
-    for(var i = 0; i < textResponses.length; i++) {
-      if (payload == textResponses[i].payload) {
-        response = textResponses[i].response
-      }
+  for(var i = 0; i < textResponses.length; i++) {
+    console.log(payload, textResponses[i].payload)
+    if (payload == textResponses[i].payload) {
+      console.log("response should be set equal to" + textResponses[i].response.text)
+      response = textResponses[i].response
     }
   }
   // if (payload === 'GREETING') {
