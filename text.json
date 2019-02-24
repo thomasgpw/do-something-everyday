@@ -1,0 +1,16 @@
+{
+	"text responses": [
+		{
+			"payload": "GREETINGS",
+			"response": { "text": "Hi, I'm Do Something Everyday.  What should I call you?" }
+		},
+		{
+			"payload": "yes",
+			"response": { "text": "Thanks!" }
+		},
+		{
+			"payload": "no",
+			"response": { "text": "Oops, try sending another image." }
+		}
+	]
+}
