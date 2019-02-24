@@ -22,6 +22,7 @@
 
 'use strict';
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
 // Imports dependencies and set up http server
 const 
   request = require('request'),
@@ -103,42 +104,42 @@ function handleMessage(sender_psid, received_message) {
   console.log("handleMessage received_message object", received_message)
   let response;
   
-  // Checks if the message contains text
-  if (received_message.text) {    
-    // Create the payload for a basic text message, which
-    // will be added to the body of our request to the Send API
-    response = {
-      "text": `You sent the message: "${received_message.text}". Now send me an attachment!`
-    }
-  } else if (received_message.attachments) {
-    // Get the URL of the message attachment
-    let attachment_url = received_message.attachments[0].payload.url;
-    response = {
-      "attachment": {
-        "type": "template",
-        "payload": {
-          "template_type": "generic",
-          "elements": [{
-            "title": "Is this the right picture?",
-            "subtitle": "Tap a button to answer.",
-            "image_url": attachment_url,
-            "buttons": [
-              {
-                "type": "postback",
-                "title": "Yes!",
-                "payload": "yes",
-              },
-              {
-                "type": "postback",
-                "title": "No!",
-                "payload": "no",
-              }
-            ],
-          }]
-        }
-      }
-    }
-  } 
+  // // Checks if the message contains text
+  // if (received_message.text) {    
+  //   // Create the payload for a basic text message, which
+  //   // will be added to the body of our request to the Send API
+  //   response = {
+  //     "text": `You sent the message: "${received_message.text}". Now send me an attachment!`
+  //   }
+  // } else if (received_message.attachments) {
+  //   // Get the URL of the message attachment
+  //   let attachment_url = received_message.attachments[0].payload.url;
+  //   response = {
+  //     "attachment": {
+  //       "type": "template",
+  //       "payload": {
+  //         "template_type": "generic",
+  //         "elements": [{
+  //           "title": "Is this the right picture?",
+  //           "subtitle": "Tap a button to answer.",
+  //           "image_url": attachment_url,
+  //           "buttons": [
+  //             {
+  //               "type": "postback",
+  //               "title": "Yes!",
+  //               "payload": "yes",
+  //             },
+  //             {
+  //               "type": "postback",
+  //               "title": "No!",
+  //               "payload": "no",
+  //             }
+  //           ],
+  //         }]
+  //       }
+  //     }
+  //   }
+  // } 
   
   // Send the response message
   callSendAPI(sender_psid, response);    
@@ -158,18 +159,60 @@ function handlePostback(sender_psid, received_postback) {
       response = textResponses[i].response
     }
   }
-  // if (payload === 'GREETING') {
-  //   response = { "text": "Hi, I'm Do Something Everyday.  What should I call you?"}
-  // }
-  // // Set the response based on the postback payload
-  // if (payload === 'yes') {
-  //   response = { "text": "Thanks!" }
-  // } else if (payload === 'no') {
-  //   response = { "text": "Oops, try sending another image." }
-  // }
-  // // Send the message to acknowledge the postback
   callSendAPI(sender_psid, response);
 }
+
+// From index2.js by Vivian Chan
+function updateStatus(sender_psid, status, callback){
+  const query = {user_id: sender_psid};
+  const update = {status: status};
+  // true if status is greeting, this makes a new document for the sender 
+  const options = {upsert: status === GREETING};
+
+  ChatStatus.findOneAndUpdate(query, update, options).exec((err, cs) => {
+    console.log('update status to db: ', cs);
+    callback(sender_psid);
+  });
+}
+
+// From index2.js by Vivian Chan
+function handleGreetingPostback(sender_psid){
+  request({
+    url: `${FACEBOOK_GRAPH_API_BASE_URL}${sender_psid}`,
+    qs: {
+      access_token: process.env.PAGE_ACCESS_TOKEN,
+      fields: "first_name"
+    },
+    method: "GET"
+  }, function(error, response, body) {
+    var greeting = "";
+    if (error) {
+      console.log("Error getting user's name: " +  error);
+    } else {
+      var bodyObj = JSON.parse(body);
+      const name = bodyObj.first_name;
+      greeting = "Hi " + name + ". ";
+    }
+    const message = greeting + "Would you like to join a community of like-minded pandas in your area?";
+    const greetingPayload = {
+      "text": message,
+      "quick_replies":[
+        {
+          "content_type":"text",
+          "title":"Yes!",
+          "payload": START_SEARCH_YES
+        },
+        {
+          "content_type":"text",
+          "title":"No, thanks.",
+          "payload": START_SEARCH_NO
+        }
+      ]
+    };
+    callSendAPI(sender_psid, greetingPayload);
+  });
+}
+
 
 function callSendAPI(sender_psid, response) {
   console.log("callSendAPI response object", response)

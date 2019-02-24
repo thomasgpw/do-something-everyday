@@ -2,7 +2,9 @@
 	"text responses": [
 		{
 			"payload": "GREETING",
-			"response": { "text": "Hi, I'm Do Something Everyday.  What should I call you?" }
+			"response": {
+				"text": "Hi, I'm Do Something Everyday.  What should I call you?"				
+			}
 		},
 		{
 			"payload": "yes",
