@@ -36,25 +36,19 @@ app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
 
 // Accepts POST requests at /webhook endpoint
 app.post('/webhook', (req, res) => {  
-  console.log("app.post unpacking")
 
   // Parse the request body from the POST
   let body = req.body;
-  console.log("req.body objecct", body)
   // Check the webhook event is from a Page subscription
   if (body.object === 'page') {
     body.entry.forEach(function(entry) {
-      console.log("body.entry.foreachentry", entry)
 
       // Gets the body of the webhook event
       let webhook_event = entry.messaging[0];
-      console.log("entry.messaging list", entry.messaging)
       console.log("webhook event object:",webhook_event);
-
 
       // Get the sender PSID
       let sender_psid = webhook_event.sender.id;
-      console.log('webhook event Sender ID: ' + sender_psid);
 
       // Check if the event is a message or postback and
       // pass the event to the appropriate handler function
@@ -169,7 +163,7 @@ function handlePostback(sender_psid, received_postback) {
 
 function callSendAPI(sender_psid, response) {
   console.log("callSendAPI response object", response)
-  
+
   // Construct the message body
   let request_body = {
     "recipient": {
