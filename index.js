@@ -29,7 +29,7 @@ const
   path = require('path'),
   body_parser = require('body-parser'),
   mongoose = require('mongoose'),
-  textResponses = require('./text'),
+  textResponses = require('./text')["text responses"],
   app = express().use(body_parser.json()); // creates express http server
 
 // Sets server port and logs message on success
@@ -56,7 +56,6 @@ app.post('/webhook', (req, res) => {
       if (webhook_event.message) {
         handleMessage(sender_psid, webhook_event.message);        
       } else if (webhook_event.postback) {
-        
         handlePostback(sender_psid, webhook_event.postback);
       }
       
@@ -148,10 +147,17 @@ function handleMessage(sender_psid, received_message) {
 function handlePostback(sender_psid, received_postback) {
   console.log(textResponses)
   console.log("handleMessage received_postback object", received_postback)
-   let response;
+  let response;
   // Get the payload for the postback
   let payload = received_postback.payload;
 
+  if (payload) {
+    for(var i = 0; i < textResponses.length; i++) {
+      if (payload == textResponses[i].payload) {
+        response = textResponses[i].response
+      }
+    }
+  }
   // if (payload === 'GREETING') {
   //   response = { "text": "Hi, I'm Do Something Everyday.  What should I call you?"}
   // }
