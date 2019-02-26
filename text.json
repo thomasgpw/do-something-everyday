@@ -1,18 +1,166 @@
 {
 	"text responses": [
 		{
-			"payload": "GREETING",
+			"trigger": "INIT_0",
 			"response": {
-				"text": "Hi, I'm Do Something Everyday.  What should I call you?"				
+				"message": {
+					"text": "Hi, I'm Do Something Everyday.  What should I call you?"
+				}
+			},
+			"next_payload": "WAIT_INIT_1"
+		},
+		{
+			"trigger": "INIT_1",
+			"response": {
+				"message": {
+					"text": "What have you been working on lately?"
+				}
 			}
 		},
 		{
-			"payload": "yes",
-			"response": { "text": "Thanks!" }
+			"trigger": "INIT_1.1",
+			"response": {
+				"message": {
+					"text": "Do you have other goals to work towards doing daily?",
+					"quick_replies": [
+						{
+							"content_type": "text",
+							"title": "Yes",
+							"payload": "INIT_1.2"
+						},
+						{
+							"content_type": "text",
+							"title": "Nope",
+							"payload": "INIT_2"
+						}
+					]
+				}
+			}
 		},
 		{
-			"payload": "no",
-			"response": { "text": "Oops, try sending another image." }
+			"trigger": "INIT_1.2",
+			"response": {
+				"message": {
+					"text": "What else are you working on?"
+				}
+			},
+			"next_payload": "WAIT_INIT_1.1"
+		},
+		{
+			"trigger": "INIT_2",
+			"response": {
+				"message": {
+					"text": "What is something that consistently relaxes you?"
+				}
+			},
+			"next_payload": "WAIT_INIT_2.1"
+		},
+		{
+			"trigger": "INIT_2.1",
+			"response": {
+				"message": {
+					"text": "Is there anything else that helps comfort you to do?",
+					"quick_replies": [
+						{
+							"content_type": "text",
+							"title": "Yes",
+							"payload": "INIT_2"
+						},
+						{
+							"content_type": "text",
+							"title": "Nope",
+							"payload": "INIT_3"
+						}
+					]
+				}
+			}
+		},
+		{
+			"trigger": "INIT_3",
+			"response": {
+				"message": {
+					"text": "Do you have anyone who can check in on you if you're not doing well?",
+					"quick_replies": [
+						{
+							"content_type": "text",
+							"title": "Yes",
+							"payload": "INIT_3.2"
+						},
+						{
+							"content_type": "text",
+							"title": "Nope",
+							"payload": "INIT_3.1"
+						}
+					]
+				}
+			}
+		},
+		{
+			"trigger": "INIT_3.1",
+			"response": {
+				"message": {
+					"text": "Well maybe that's something we can work on.  Would you like to add making connections as a goal?",
+					"quick_replies": [
+						{
+							"content_type": "text",
+							"title": "Yes",
+							"payload": "INIT_3.1.1"
+						},
+						{
+							"content_type": "text",
+							"title": "Nope",
+							"payload": "INIT_4"
+						}
+					]
+				}
+			}
+		},
+		{
+			"trigger": "INIT_3.1.1",
+			"response": {
+				"message": {
+					"text": "Great, I'll add making connections to our list of your goals"
+				}
+			},
+			"next_payload": "INIT_4"
+		},
+		{
+			"trigger": "INIT_3.2",
+			"response": {
+				"message": {
+					"text": "What's their name?"
+				}
+			},
+			"next_payload": "WAIT_INIT_3.2.1"
+		},
+		{
+			"trigger": "INIT_3.2.1",
+			"response": {
+				"message": {
+					"text": "Is there anyone else you can get support from when you need it?",
+					"quick_replies": [
+						{
+							"content_type": "text",
+							"title": "Yes",
+							"payload": "INIT_3.2"
+						},
+						{
+							"content_type": "text",
+							"title": "Nope",
+							"payload": "INIT_4"
+						}
+					]
+				}
+			}
+		},
+		{
+			"trigger": "INIT_3.2",
+			"response": {
+				"message": {
+					"text": "Thank you, that's all I need.  Let's get started!"
+				}
+			},
+			"next_payload": "CHECKIN_0"
 		}
 	]
 }
