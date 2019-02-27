@@ -3,6 +3,7 @@
 		{
 			"trigger": "INIT_0",
 			"response": {
+				"messaging_type": "RESPONSE",
 				"message": {
 					"text": "Hi, I'm Do Something Everyday.  What should I call you?"
 				}
@@ -20,6 +21,7 @@
 		{
 			"trigger": "INIT_1.1",
 			"response": {
+				"messaging_type": "RESPONSE",
 				"message": {
 					"text": "Do you have other goals to work towards doing daily?",
 					"quick_replies": [
@@ -40,6 +42,7 @@
 		{
 			"trigger": "INIT_1.2",
 			"response": {
+				"messaging_type": "RESPONSE",
 				"message": {
 					"text": "What else are you working on?"
 				}
@@ -49,6 +52,7 @@
 		{
 			"trigger": "INIT_2",
 			"response": {
+				"messaging_type": "RESPONSE",
 				"message": {
 					"text": "What is something that consistently relaxes you?"
 				}
@@ -58,6 +62,7 @@
 		{
 			"trigger": "INIT_2.1",
 			"response": {
+				"messaging_type": "RESPONSE",
 				"message": {
 					"text": "Is there anything else that helps comfort you to do?",
 					"quick_replies": [
@@ -78,6 +83,7 @@
 		{
 			"trigger": "INIT_3",
 			"response": {
+				"messaging_type": "RESPONSE",
 				"message": {
 					"text": "Do you have anyone who can check in on you if you're not doing well?",
 					"quick_replies": [
@@ -98,6 +104,7 @@
 		{
 			"trigger": "INIT_3.1",
 			"response": {
+				"messaging_type": "RESPONSE",
 				"message": {
 					"text": "Well maybe that's something we can work on.  Would you like to add making connections as a goal?",
 					"quick_replies": [
@@ -118,6 +125,7 @@
 		{
 			"trigger": "INIT_3.1.1",
 			"response": {
+				"messaging_type": "RESPONSE",
 				"message": {
 					"text": "Great, I'll add making connections to our list of your goals"
 				}
@@ -127,6 +135,7 @@
 		{
 			"trigger": "INIT_3.2",
 			"response": {
+				"messaging_type": "RESPONSE",
 				"message": {
 					"text": "What's their name?"
 				}
@@ -136,6 +145,7 @@
 		{
 			"trigger": "INIT_3.2.1",
 			"response": {
+				"messaging_type": "RESPONSE",
 				"message": {
 					"text": "Is there anyone else you can get support from when you need it?",
 					"quick_replies": [
@@ -156,6 +166,7 @@
 		{
 			"trigger": "INIT_3.2",
 			"response": {
+				"messaging_type": "RESPONSE",
 				"message": {
 					"text": "Thank you, that's all I need.  Let's get started!"
 				}

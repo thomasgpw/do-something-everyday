@@ -20,6 +20,10 @@
  *
  */
 
+
+
+ /*** GLOBAL CONSTANTS & REQUIREMENTS ***/
+
 'use strict';
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
@@ -35,6 +39,13 @@ const
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
+
+
+
+
+/** SITE ROUTING **/
+
+/* APP POST ENDPOINTS */
 
 // Accepts POST requests at /webhook endpoint
 app.post('/webhook', (req, res) => {  
@@ -71,6 +82,8 @@ app.post('/webhook', (req, res) => {
 
 });
 
+/* APP GET ENDPOINTS */
+
 // Accepts GET requests at the /webhook endpoint
 app.get('/webhook', (req, res) => {
   console.log("app.get at /webhook request object", req)
@@ -99,6 +112,16 @@ app.get('/webhook', (req, res) => {
     }
   }
 });
+
+// Accepts GET requests at the / endpoint
+app.get('/:var(privacypolicy)?', (req, res) => {
+  res.sendFile(path.join(__dirname, "privacypolicy.html"))
+})
+
+
+
+
+/*  CONTROLLER LOGIC */
 
 function handleMessage(sender_psid, received_message) {
   console.log("handleMessage received_message object", received_message)
@@ -176,61 +199,18 @@ function updateStatus(sender_psid, status, callback){
 }
 
 // From index2.js by Vivian Chan
-function handleGreetingPostback(sender_psid){
-  request({
-    url: `${FACEBOOK_GRAPH_API_BASE_URL}${sender_psid}`,
-    qs: {
-      access_token: process.env.PAGE_ACCESS_TOKEN,
-      fields: "first_name"
-    },
-    method: "GET"
-  }, function(error, response, body) {
-    var greeting = "";
-    if (error) {
-      console.log("Error getting user's name: " +  error);
-    } else {
-      var bodyObj = JSON.parse(body);
-      const name = bodyObj.first_name;
-      greeting = "Hi " + name + ". ";
-    }
-    const message = greeting + "Would you like to join a community of like-minded pandas in your area?";
-    const greetingPayload = {
-      "text": message,
-      "quick_replies":[
-        {
-          "content_type":"text",
-          "title":"Yes!",
-          "payload": START_SEARCH_YES
-        },
-        {
-          "content_type":"text",
-          "title":"No, thanks.",
-          "payload": START_SEARCH_NO
-        }
-      ]
-    };
-    callSendAPI(sender_psid, greetingPayload);
-  });
-}
-
-
 function callSendAPI(sender_psid, response) {
   console.log("callSendAPI response object", response)
 
   // Construct the message body
-  let request_body = {
-    "recipient": {
-      "id": sender_psid
-    },
-    "message": response
-  }
+  response.recipient = {  "id": sender_psid  }
 
   // Send the HTTP request to the Messenger Platform
   request({
     "uri": "https://graph.facebook.com/v2.6/me/messages",
     "qs": { "access_token": PAGE_ACCESS_TOKEN },
     "method": "POST",
-    "json": request_body
+    "json": response
   }, (err, res, body) => {
     if (!err) {
       console.log('message sent!')
@@ -240,7 +220,40 @@ function callSendAPI(sender_psid, response) {
   }); 
 }
 
-// Accepts GET requests at the / endpoint
-app.get('/:var(privacypolicy)?', (req, res) => {
-  res.sendFile(path.join(__dirname, "privacypolicy.html"))
-})
+// // From index2.js by Vivian Chan
+// function handleGreetingPostback(sender_psid){
+//   request({
+//     url: `${FACEBOOK_GRAPH_API_BASE_URL}${sender_psid}`,
+//     qs: {
+//       access_token: process.env.PAGE_ACCESS_TOKEN,
+//       fields: "first_name"
+//     },
+//     method: "GET"
+//   }, function(error, response, body) {
+//     var greeting = "";
+//     if (error) {
+//       console.log("Error getting user's name: " +  error);
+//     } else {
+//       var bodyObj = JSON.parse(body);
+//       const name = bodyObj.first_name;
+//       greeting = "Hi " + name + ". ";
+//     }
+//     const message = greeting + "Would you like to join a community of like-minded pandas in your area?";
+//     const greetingPayload = {
+//       "text": message,
+//       "quick_replies":[
+//         {
+//           "content_type":"text",
+//           "title":"Yes!",
+//           "payload": START_SEARCH_YES
+//         },
+//         {
+//           "content_type":"text",
+//           "title":"No, thanks.",
+//           "payload": START_SEARCH_NO
+//         }
+//       ]
+//     };
+//     callSendAPI(sender_psid, greetingPayload);
+//   });
+// }
