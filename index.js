@@ -187,7 +187,9 @@ function handlePostback(sender_psid, received_postback) {
       response = text_responses[i].response
       if (text_responses[i].next_trigger) {
         next_trigger = text_responses[i].next_trigger
-        updateStatus(sender_psid, next_trigger, callSendAPI, response)
+        updateStatus(sender_psid, next_trigger, (callSendAPI, sender_psid, response) => {
+          callSendAPI(sender_psid, response);
+        })
       }
     }
   }
@@ -199,18 +201,16 @@ function handlePostback(sender_psid, received_postback) {
 /** SERVICES & UTILITY FUNCTION **/
 
 // Modified off of index2.js by Vivian Chan
-function updateStatus(sender_psid, status, callback, response){
+function updateStatus(sender_psid, status, callback){
   const query = {user_id: sender_psid};
   const update = {status: status};
   // true if status is INIT_0, this makes a new document for the sender 
   const options = {upsert: status === "INIT_0"};
-  console.log("update status", status, response)
+  console.log("update status", status)
 
-  ChatStatus.findOneAndUpdate(query, update, options, (response) => {
-    callSendAPI(sender_psid, response)
-  }).exec((err, cs) => {
+  ChatStatus.findOneAndUpdate(query, update, options, callback).exec((err, cs) => {
     console.log('update status to db: ', cs);
-    callback();
+    callback(sender_psid);
   });
 }
 
