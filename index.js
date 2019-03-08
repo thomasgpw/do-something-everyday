@@ -206,9 +206,11 @@ function updateStatus(sender_psid, status, callback, response){
   const options = {upsert: status === "INIT_0"};
   console.log("update status", status, response)
 
-  ChatStatus.findOneAndUpdate(query, update, options, callback, response).exec((err, cs) => {
+  ChatStatus.findOneAndUpdate(query, update, options, (response) => {
+    callSendAPI(sender_psid, response)
+  }).exec((err, cs) => {
     console.log('update status to db: ', cs);
-    callback(sender_psid, response);
+    callback();
   });
 }
 
