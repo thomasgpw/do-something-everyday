@@ -1,25 +1,22 @@
 
-/**
- * Copyright 2017-present, Facebook, Inc. All rights reserved.
+/*
+ * This file and code are modified from an original file from Facebook, Inc.
+ * The use is permitted by their license which can be found in their original file heading below.
  *
- * This source code is licensed under the license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * Messenger Platform Quick Start Tutorial
- *
- * This is the completed code for the Messenger Platform quick start tutorial
- *
- * https://developers.facebook.com/docs/messenger-platform/getting-started/quick-start/
- *
- * To run this code, you must do the following:
- *
- * 1. Deploy this code to a server running Node.js
- * 2. Run `npm install`
- * 3. Update the VERIFY_TOKEN
- * 4. Add your PAGE_ACCESS_TOKEN to your environment vars
- *
+ * *
+ * * Copyright 2017-present, Facebook, Inc. All rights reserved.
+ * *
+ * * This source code is licensed under the license found in the
+ * * LICENSE file in the root directory of this source tree.
+ * *
+ * * Messenger Platform Quick Start Tutorial
+ * *
+ * * This is the completed code for the Messenger Platform quick start tutorial
+ * *
+ * * https://developers.facebook.com/docs/messenger-platform/getting-started/quick-start/
+ * *
+ * 
  */
-
 
 
  /*** GLOBAL CONSTANTS & REQUIREMENTS ***/
@@ -34,7 +31,7 @@ const
   path = require('path'),
   body_parser = require('body-parser'),
   mongoose = require('mongoose'),
-  textResponses = require('./text')["text responses"],
+  text_responses = require('./text')["text responses"],
   app = express().use(body_parser.json()); // creates express http server
 
 // Sets server port and logs message on success
@@ -113,7 +110,7 @@ app.get('/webhook', (req, res) => {
   }
 });
 
-// Accepts GET requests at the / endpoint
+// Accepts GET requests at the / and /privacypolicy endpoint
 app.get('/:var(privacypolicy)?', (req, res) => {
   res.sendFile(path.join(__dirname, "privacypolicy.html"))
 })
@@ -121,7 +118,7 @@ app.get('/:var(privacypolicy)?', (req, res) => {
 
 
 
-/*  CONTROLLER LOGIC */
+/**  CONTROLLER LOGIC **/
 
 function handleMessage(sender_psid, received_message) {
   console.log("handleMessage received_message object", received_message)
@@ -162,43 +159,54 @@ function handleMessage(sender_psid, received_message) {
         }
       }
     }
-  } 
+  } else {
+    throw "message held neither text nor attachments"
+  }
   
   // Send the response message
   callSendAPI(sender_psid, response);    
 }
 
 function handlePostback(sender_psid, received_postback) {
-  console.log(textResponses)
+  console.log(text_responses)
   console.log("handleMessage received_postback object", received_postback)
   let response;
+  let next_trigger;
   // Get the payload for the postback
   let payload = received_postback.payload;
   console.log("payload is " + payload)
-  for(var i = 0; i < textResponses.length; i++) {
-    console.log("comparing payload to " + textResponses[i].trigger)
-    if (payload == textResponses[i].trigger) {
-      console.log("response text should be set equal to " + textResponses[i].response.message.text)
-      response = textResponses[i].response
+  for(var i = 0; i < text_responses.length; i++) {
+    console.log("comparing payload to " + text_responses[i].trigger)
+    if (payload == text_responses[i].trigger) {
+      console.log("response text should be set equal to " + text_responses[i].response.message.text)
+      response = text_responses[i].response
+      if (text_responses[i].next_trigger) {
+        next_trigger = text_responses[i].next_trigger
+        updateStatus(sender_psid, next_trigger, callSendAPI, response)
+      }
     }
   }
-  callSendAPI(sender_psid, response);
+  if(!next_trigger){
+    console.log("handle_postback broke")
+  }
 }
 
-// From index2.js by Vivian Chan
-function updateStatus(sender_psid, status, callback){
+/** SERVICES & UTILITY FUNCTION **/
+
+// Modified off of index2.js by Vivian Chan
+function updateStatus(sender_psid, status, callback, response){
   const query = {user_id: sender_psid};
   const update = {status: status};
-  // true if status is greeting, this makes a new document for the sender 
-  const options = {upsert: status === GREETING};
+  // true if status is INIT_0, this makes a new document for the sender 
+  const options = {upsert: status === "INIT_0"};
 
-  ChatStatus.findOneAndUpdate(query, update, options).exec((err, cs) => {
+  ChatStatus.findOneAndUpdate(query, update, options, callback).exec((err, cs) => {
     console.log('update status to db: ', cs);
-    callback(sender_psid);
+    callback(sender_psid, response);
   });
 }
 
-// From index2.js by Vivian Chan
+// Modified off of index2.js by Vivian Chan
 function callSendAPI(sender_psid, response) {
   console.log("callSendAPI response object", response)
 
