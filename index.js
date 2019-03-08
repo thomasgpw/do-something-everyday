@@ -204,6 +204,7 @@ function updateStatus(sender_psid, status, callback, response){
   const update = {status: status};
   // true if status is INIT_0, this makes a new document for the sender 
   const options = {upsert: status === "INIT_0"};
+  console.log("update status", status, response)
 
   ChatStatus.findOneAndUpdate(query, update, options, callback).exec((err, cs) => {
     console.log('update status to db: ', cs);
