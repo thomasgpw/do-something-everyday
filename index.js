@@ -204,7 +204,7 @@ function handlePostback(sender_psid, received_postback) {
 
 /** SERVICES & UTILITY FUNCTION **/
 
-function updateTheCloud(sender_psid,)
+// function updateTheCloud(sender_psid,)
 
 // Modified off of index2.js by Vivian Chan
 function updateStatus(sender_psid, status){
