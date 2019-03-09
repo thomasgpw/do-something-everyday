@@ -190,7 +190,8 @@ function handlePostback(sender_psid, received_postback) {
         // return callSendAPI.then()
         // updateStatus(sender_psid, next_trigger, callSendAPI, response)
         console.log("calling callSendAPI")
-        callSendAPI(sender_psid, response).then(() => {
+        let sendapi_promise = callSendAPI(sender_psid, response)
+        sendapi_promise.then(() => {
           console.log("inside then from callSendAPI")
           updateStatus(sender_psid, next_trigger)
         })
