@@ -187,8 +187,12 @@ function handlePostback(sender_psid, received_postback) {
       response = text_responses[i].response
       if (text_responses[i].next_trigger) {
         next_trigger = text_responses[i].next_trigger
-        updateStatus(sender_psid, next_trigger, (callSendAPI, sender_psid, response) => {
-          callSendAPI(sender_psid, response);
+        // return callSendAPI.then()
+        // updateStatus(sender_psid, next_trigger, callSendAPI, response)
+        console.log("calling callSendAPI")
+        callSendAPI(sender_psid, response).then(() => {
+          console.log("inside then from callSendAPI")
+          updateStatus(sender_psid, next_trigger)
         })
       }
     }
@@ -200,18 +204,19 @@ function handlePostback(sender_psid, received_postback) {
 
 /** SERVICES & UTILITY FUNCTION **/
 
+function updateTheCloud(sender_psid,)
+
 // Modified off of index2.js by Vivian Chan
-function updateStatus(sender_psid, status, callback){
+function updateStatus(sender_psid, status){
   const query = {user_id: sender_psid};
   const update = {status: status};
   // true if status is INIT_0, this makes a new document for the sender 
   const options = {upsert: status === "INIT_0"};
-  console.log("update status", status)
 
-  ChatStatus.findOneAndUpdate(query, update, options, callback).exec((err, cs) => {
+  ChatStatus.findOneAndUpdate(query, update, options).exec((err, cs) => {
     console.log('update status to db: ', cs);
-    callback(sender_psid);
-  });
+    callback(sender_psid, response);
+  })
 }
 
 // Modified off of index2.js by Vivian Chan
@@ -222,7 +227,7 @@ function callSendAPI(sender_psid, response) {
   response.recipient = {  "id": sender_psid  }
 
   // Send the HTTP request to the Messenger Platform
-  request({
+  return request({
     "uri": "https://graph.facebook.com/v2.6/me/messages",
     "qs": { "access_token": PAGE_ACCESS_TOKEN },
     "method": "POST",
@@ -230,10 +235,12 @@ function callSendAPI(sender_psid, response) {
   }, (err, res, body) => {
     if (!err) {
       console.log('message sent!')
+      return Promise.resolve()
     } else {
       console.error("Unable to send message:" + err);
+      return Promise.reject(err);
     }
-  }); 
+  });
 }
 
 // // From index2.js by Vivian Chan
