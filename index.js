@@ -190,8 +190,8 @@ function handlePostback(sender_psid, received_postback) {
         // return callSendAPI.then()
         // updateStatus(sender_psid, next_trigger, callSendAPI, response)
         console.log("calling callSendAPI")
-        let sendapi_promise = callSendAPI(sender_psid, response)
-        sendapi_promise.then(() => {
+        let sendapi_promise = callSendAPI
+        sendapi_promise(sender_psid, response).then(() => {
           console.log("inside then from callSendAPI")
           updateStatus(sender_psid, next_trigger)
         })
@@ -243,6 +243,8 @@ function callSendAPI(sender_psid, response) {
     }
   });
 }
+
+// function callSendAPIPromise(sen)
 
 // // From index2.js by Vivian Chan
 // function handleGreetingPostback(sender_psid){
