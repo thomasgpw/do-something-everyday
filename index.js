@@ -190,14 +190,14 @@ function handlePostback(sender_psid, received_postback) {
         next_trigger = text_responses[i].next_trigger
         // return callSendAPI.then()
         // updateStatus(sender_psid, next_trigger, callSendAPI, response)
-        console.log("calling callSendAPI")
-        let sendapi_promise = new Promise(function(resolve) {
-          return resolve(sender_psid, response)
-        })
-        sendapi_promise(callSendAPI).then(result => {
-          console.log("inside then from callSendAPI", result)
+        // console.log("calling callSendAPI")
+        try {
+          callSendAPI(sender_psid, response)
           updateStatus(sender_psid, next_trigger)
-        })
+        } catch(err) {
+          console.log(err)
+        }
+        
       }
     }
   }
