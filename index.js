@@ -219,7 +219,7 @@ function updateStatus(sender_psid, status){
 
   ChatStatus.findOneAndUpdate(query, update, options).exec((err, cs) => {
     console.log('update status to db: ', cs);
-    callback(sender_psid, response);
+    // callback(sender_psid, response);
   })
 }
 
