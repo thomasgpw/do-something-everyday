@@ -22,6 +22,7 @@
  /*** GLOBAL CONSTANTS & REQUIREMENTS ***/
 
 'use strict';
+require('dotenv').config();
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -190,9 +191,11 @@ function handlePostback(sender_psid, received_postback) {
         // return callSendAPI.then()
         // updateStatus(sender_psid, next_trigger, callSendAPI, response)
         console.log("calling callSendAPI")
-        let sendapi_promise = callSendAPI
-        sendapi_promise(sender_psid, response).then(() => {
-          console.log("inside then from callSendAPI")
+        let sendapi_promise = new Promise(function(resolve) {
+          return resolve(sender_psid, response)
+        })
+        sendapi_promise.resolve(callSendAPI).then(result => {
+          console.log("inside then from callSendAPI", result)
           updateStatus(sender_psid, next_trigger)
         })
       }
