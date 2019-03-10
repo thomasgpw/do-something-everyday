@@ -43,19 +43,13 @@ var ChatStatus = require("./models/chatstatus");
 class DSEEventObject {
   constructor(sender_psid, trigger) {
     this._sender_psid = sender_psid
-    jsonObj = getEventJSON(sender_psid, trigger)
-    this._response = jsonObj.response
-    if (jsonObj.next_trigger) {
-      this._next_trigger = jsonObj.next_trigger
-    } else {
-      this._next_trigger = false
-    }
+    this._jsonObj = getEventJSON(sender_psid, trigger)
   }
   get response() {
-    return this._response
+    return this._jsonObj.response
   }
   get next_trigger() {
-    return this._next_trigger
+    return this._jsonObj.next_trigger
   }
   get sender_psid() {
     return this._sender_psid
