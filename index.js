@@ -40,6 +40,43 @@ const
 var db = mongoose.connect(MONGODB_URI);
 var ChatStatus = require("./models/chatstatus");
 
+class DSEEventObject {
+  #sender_psid;
+  #response;
+  #next_trigger = false;
+  constructor(sender_psid, trigger) {
+    this.#sender_psid = sender_psid
+    jsonObj = getEventJSON(sender_psid, trigger)
+    this.#response = jsonObj.response
+    if (jsonObj.next_trigger) {
+      this.#next_trigger = jsonObj.next_trigger
+    } else {
+      this.#next_trigger = false
+    }
+  }
+  get response() {
+    return this.#response
+  }
+  get next_trigger() {
+    return this.#next_trigger
+  }
+  get sender_psid() {
+    return this.#sender_psid
+  }
+  r
+}
+
+function getEventJSON(sender_psid, trigger) {
+  for(var i = 0; i < text_responses.length; i++) {
+    console.log("comparing payload to " + text_responses[i].trigger)
+    if (trigger == text_responses[i].trigger) {
+      console.log("response text should be set equal to " + text_responses[i].response.message.text)
+      return text_responses[i]
+    }
+  }
+}
+
+
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
 
@@ -174,36 +211,39 @@ function handleMessage(sender_psid, received_message) {
 }
 
 function handlePostback(sender_psid, received_postback) {
-  console.log(text_responses)
   console.log("handleMessage received_postback object", received_postback)
-  let response;
-  let next_trigger;
   // Get the payload for the postback
   let payload = received_postback.payload;
   console.log("payload is " + payload)
-  for(var i = 0; i < text_responses.length; i++) {
-    console.log("comparing payload to " + text_responses[i].trigger)
-    if (payload == text_responses[i].trigger) {
-      console.log("response text should be set equal to " + text_responses[i].response.message.text)
-      response = text_responses[i].response
-      if (text_responses[i].next_trigger) {
-        next_trigger = text_responses[i].next_trigger
-        // return callSendAPI.then()
-        // updateStatus(sender_psid, next_trigger, callSendAPI, response)
-        // console.log("calling callSendAPI")
-        try {
-          callSendAPI(sender_psid, response)
-          updateStatus(sender_psid, next_trigger)
-        } catch(err) {
-          console.log(err)
-        }
-        
-      }
-    }
+  updateStatus(sender_psid, payload)
+  const dseEventObj = new DSEEventObject(sender_psid, payload)
+  callSendAPI(sender_psid, dseEventObj.response)
+  if(dseEventObj.next_trigger) {
+    updateStatus(sender_psid, dseEventObj.next_trigger)
   }
-  if(!next_trigger){
-    console.log("handle_postback broke")
-  }
+  // for(var i = 0; i < text_responses.length; i++) {
+  //   console.log("comparing payload to " + text_responses[i].trigger)
+  //   if (payload == text_responses[i].trigger) {
+  //     console.log("response text should be set equal to " + text_responses[i].response.message.text)
+  //     response = text_responses[i].response
+  //     if (text_responses[i].next_trigger) {
+  //       next_trigger = text_responses[i].next_trigger
+  //       // return callSendAPI.then()
+  //       // updateStatus(sender_psid, next_trigger, callSendAPI, response)
+  //       // console.log("calling callSendAPI")
+  //       try {
+  //         callSendAPI(sender_psid, response)
+  //         updateStatus(sender_psid, next_trigger)
+  //       } catch(err) {
+  //         console.log(err)
+  //       }
+  //     }
+  //   }
+  // }
+  // next_trigger = 
+  // if(!next_trigger){
+  //   console.log("handle_postback broke")
+  // }
 }
 
 /** SERVICES & UTILITY FUNCTION **/
