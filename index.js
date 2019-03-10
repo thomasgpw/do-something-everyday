@@ -41,27 +41,27 @@ var db = mongoose.connect(MONGODB_URI);
 var ChatStatus = require("./models/chatstatus");
 
 class DSEEventObject {
-  #sender_psid;
-  #response;
-  #next_trigger = false;
+  _sender_psid;
+  _response;
+  _next_trigger = false;
   constructor(sender_psid, trigger) {
-    this.#sender_psid = sender_psid
+    this._sender_psid = sender_psid
     jsonObj = getEventJSON(sender_psid, trigger)
-    this.#response = jsonObj.response
+    this._response = jsonObj.response
     if (jsonObj.next_trigger) {
-      this.#next_trigger = jsonObj.next_trigger
+      this._next_trigger = jsonObj.next_trigger
     } else {
-      this.#next_trigger = false
+      this._next_trigger = false
     }
   }
   get response() {
-    return this.#response
+    return this._response
   }
   get next_trigger() {
-    return this.#next_trigger
+    return this._next_trigger
   }
   get sender_psid() {
-    return this.#sender_psid
+    return this._sender_psid
   }
   r
 }
