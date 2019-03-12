@@ -256,11 +256,11 @@ function updateStatus(sender_psid, status) {
 
 function getStatus(sender_psid) {
   const query = {user_id: sender_psid};
-  ChatStatus.findOne(query, "status", (err, status) => {
+  ChatStatus.findOne(query, "status", (err, obj) => {
     if(err) {
       throw err
     } else {
-      console.log(status)
+      console.log(obj.status)
     }
   })
   // console.log("Getting status", status)
