@@ -155,7 +155,8 @@ app.get('/:var(privacypolicy)?', (req, res) => {
 
 function handleMessage(sender_psid, received_message) {
   console.log("handleMessage received_message object", received_message)
-  getStatus(sender_psid)
+  status = getStatus(sender_psid)
+  console.log(status, received_message.text)
   // let response;
   
   // // Checks if the message contains text
@@ -259,11 +260,11 @@ function updateStatus(sender_psid, status) {
 function getStatus(sender_psid) {
   if (sender_psid != process.env.APP_PSID) {
     const query = {user_id: sender_psid};
-    ChatStatus.findOne(query, "status", (err, obj) => {
+    return ChatStatus.findOne(query, "status", (err, obj) => {
       if(err) {
         throw err
       } else {
-        console.log(obj.status)
+        return obj.status
       }
     })
     // console.log("Getting status", status)
