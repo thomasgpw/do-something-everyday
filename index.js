@@ -243,28 +243,32 @@ function handlePostback(sender_psid, received_postback) {
 
 // Modified off of index2.js by Vivian Chan
 function updateStatus(sender_psid, status) {
-  const query = {user_id: sender_psid};
-  const update = {status: status};
-  // true if status is INIT_0, this makes a new document for the sender 
-  const options = {upsert: status === "INIT_0"};
+  if (sender_psid != process.env.APP_PSID) {
+    const query = {user_id: sender_psid};
+    const update = {status: status};
+    // true if status is INIT_0, this makes a new document for the sender 
+    const options = {upsert: status === "INIT_0"};
 
-  ChatStatus.findOneAndUpdate(query, update, options).exec((err, cs) => {
-    console.log('update status to db: ', cs);
-    // callback(sender_psid, response);
-  })
+    ChatStatus.findOneAndUpdate(query, update, options).exec((err, cs) => {
+      console.log('update status to db: ', cs);
+      // callback(sender_psid, response);
+    })
+  }
 }
 
 function getStatus(sender_psid) {
-  const query = {user_id: sender_psid};
-  ChatStatus.findOne(query, "status", (err, obj) => {
-    if(err) {
-      throw err
-    } else {
-      console.log(obj.status)
-    }
-  })
-  // console.log("Getting status", status)
-  // return status;
+  if (sender_psid != process.env.APP_PSID) {
+    const query = {user_id: sender_psid};
+    ChatStatus.findOne(query, "status", (err, obj) => {
+      if(err) {
+        throw err
+      } else {
+        console.log(obj.status)
+      }
+    })
+    // console.log("Getting status", status)
+    // return status;
+  }
 }
 
 // Modified off of index2.js by Vivian Chan
