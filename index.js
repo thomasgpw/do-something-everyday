@@ -257,7 +257,11 @@ function updateStatus(sender_psid, status) {
 function getStatus(sender_psid) {
   const query = {user_id: sender_psid};
   status = ChatStatus.findOne(query, "status", (err, status) => {
-    return status
+    if(err) {
+      throw err
+    } else {
+      return status
+    }
   })
   console.log("Getting status", status)
   return status;
