@@ -156,7 +156,7 @@ app.get('/:var(privacypolicy)?', (req, res) => {
 function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     console.log("handleMessage received_message object", received_message)
-    const status = getDocument(sender_psid).status
+    const status = getStatus(sender_psid)
     console.log(status, received_message.text)
     // let response;
     
