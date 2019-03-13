@@ -153,10 +153,11 @@ app.get('/:var(privacypolicy)?', (req, res) => {
 
 /**  CONTROLLER LOGIC **/
 
-function handleMessage(sender_psid, received_message) {
+async function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     console.log("handleMessage received_message object", received_message)
-    console.log(getStatus(sender_psid), received_message.text)
+    let status = await getStatus(sender_psid)
+    console.log(status, received_message.text)
     // let response;
     
     // // Checks if the message contains text
@@ -258,13 +259,13 @@ function updateStatus(sender_psid, status) {
   }
 }
 
-function getStatus(sender_psid) {
+async function getStatus(sender_psid) {
   if (sender_psid != process.env.APP_PSID) {
-    return ChatStatus.findOne({user_id: sender_psid}, {status: 1}).exec((err, obj) => {
+    used_doc = await ChatStatus.findOne({user_id: sender_psid}, {status: 1}).exec((err, obj) => {
       if(err) {
-        throw err
+        reject(err)
       } else {
-        return obj
+        resolve(obj)
       }
     })
     // console.log("Getting status", status)
