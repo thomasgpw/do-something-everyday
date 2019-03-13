@@ -153,11 +153,10 @@ app.get('/:var(privacypolicy)?', (req, res) => {
 
 /**  CONTROLLER LOGIC **/
 
-async function handleMessage(sender_psid, received_message) {
+function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     console.log("handleMessage received_message object", received_message)
-    let status = await getStatus(sender_psid)
-    console.log(status, "the elusive doc obj")
+    getStatus(sender_psid, useStatus)
     // let response;
     
     // // Checks if the message contains text
@@ -240,6 +239,9 @@ function handlePostback(sender_psid, received_postback) {
   // }
 }
 
+function useStatus (obj) {
+  console.log(obj, "the elusive doc obj in useStatus")  
+}
 /** SERVICES & UTILITY FUNCTION **/
 
 // function updateTheCloud(sender_psid,)
@@ -259,18 +261,16 @@ async function updateStatus(sender_psid, status) {
   }
 }
 
-async function getStatus(sender_psid) {
+function getStatus(sender_psid, callback) {
   if (sender_psid != process.env.APP_PSID) {
     const query = {user_id: sender_psid};
-    let user_doc = await ChatStatus.findOne(query, {status: 1}).exec((err, obj) => {
-      if(err) {
-        throw err
-      } else {
-        return obj
-      }
+    ChatStatus.findOne(query, {status: 1}).exec((err, obj) => {
+      // console.log('update perference to db: ', obj);
+      console.log("inside exec", obj)
+      callback(sender_psid, obj);
     })
-    console.log("Getting user doc", await user_doc)
-    return await user_doc;
+    // console.log("Getting user doc", await user_doc)
+    // return await user_doc;
   }
 }
 
