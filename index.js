@@ -261,13 +261,13 @@ function updateStatus(sender_psid, status) {
 
 function getStatus(sender_psid) {
   if (sender_psid != process.env.APP_PSID) {
-    return ChatStatus.findOne({user_id: sender_psid}, {status: 1}, (err, obj) => {
+    return ChatStatus.findOne({user_id: sender_psid}, {status: 1}).exec((err, obj) => {
       if(err) {
         throw err
       } else {
         return obj
       }
-    }).status
+    })
     // console.log("Getting status", status)
     // return status;
   }
