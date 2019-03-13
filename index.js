@@ -157,7 +157,7 @@ async function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     console.log("handleMessage received_message object", received_message)
     let status = await getStatus(sender_psid)
-    console.log(status, received_message.text)
+    console.log(status, "the elusive doc obj")
     // let response;
     
     // // Checks if the message contains text
@@ -245,31 +245,32 @@ function handlePostback(sender_psid, received_postback) {
 // function updateTheCloud(sender_psid,)
 
 // Modified off of index2.js by Vivian Chan
-function updateStatus(sender_psid, status) {
+async function updateStatus(sender_psid, status) {
   if (sender_psid != process.env.APP_PSID) {
     const query = {user_id: sender_psid};
     const update = {status: status};
     // true if status is INIT_0, this makes a new document for the sender 
     const options = {upsert: status === "INIT_0"};
 
-    ChatStatus.findOneAndUpdate(query, update, options).exec((err, cs) => {
+    await ChatStatus.findOneAndUpdate(query, update, options).exec((err, cs) => {
       console.log('update status to db: ', cs);
-      // callback(sender_psid, response);
+      return cs
     })
   }
 }
 
 async function getStatus(sender_psid) {
   if (sender_psid != process.env.APP_PSID) {
-    let user_doc = await ChatStatus.findOne({user_id: sender_psid}, {status: 1}).exec((err, obj) => {
+    const query = {user_id: sender_psid};
+    let user_doc = await ChatStatus.findOne(query, {status: 1}).exec((err, obj) => {
       if(err) {
         throw err
       } else {
         return obj
       }
     })
-    console.log("Getting user doc", user_doc)
-    return user_doc;
+    console.log("Getting user doc", await user_doc)
+    return await user_doc;
   }
 }
 
