@@ -268,8 +268,8 @@ async function getStatus(sender_psid) {
         return obj
       }
     })
-    // console.log("Getting status", status)
-    // return status;
+    console.log("Getting user doc", user_doc)
+    return user_doc;
   }
 }
 
