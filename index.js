@@ -261,7 +261,7 @@ function updateStatus(sender_psid, status) {
 
 async function getStatus(sender_psid) {
   if (sender_psid != process.env.APP_PSID) {
-    used_doc = await ChatStatus.findOne({user_id: sender_psid}, {status: 1}).exec((err, obj) => {
+    let user_doc = await ChatStatus.findOne({user_id: sender_psid}, {status: 1}).exec((err, obj) => {
       if(err) {
         reject(err)
       } else {
