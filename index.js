@@ -208,12 +208,7 @@ function handlePostback(sender_psid, received_postback) {
   // Get the payload for the postback
   let payload = received_postback.payload;
   console.log("payload is " + payload)
-  updateStatus(sender_psid, payload)
-  const dseEventObj = new DSEEventObject(sender_psid, payload)
-  callSendAPI(sender_psid, dseEventObj.response)
-  if(dseEventObj.next_trigger) {
-    updateStatus(sender_psid, dseEventObj.next_trigger)
-  }
+  updateStatus(sender_psid, payload, runDSEEvent)
   // for(var i = 0; i < text_responses.length; i++) {
   //   console.log("comparing payload to " + text_responses[i].trigger)
   //   if (payload == text_responses[i].trigger) {
@@ -240,23 +235,32 @@ function handlePostback(sender_psid, received_postback) {
 }
 
 function useStatus (obj) {
-  console.log(obj, "the elusive doc obj in useStatus")  
+  console.log(obj.status, "the elusive doc_obj.status in useStatus")  
+}
+
+function runDSEEvent(sender_psid, status, cs) {
+  console.log("inside runDSEEvent callback.  cs is ", cs)
+  const dseEventObj = new DSEEventObject(sender_psid, status)
+  callSendAPI(sender_psid, dseEventObj.response)
+  if(dseEventObj.next_trigger) {
+    updateStatus(sender_psid, dseEventObj.next_trigger)
+  }
 }
 /** SERVICES & UTILITY FUNCTION **/
 
 // function updateTheCloud(sender_psid,)
 
 // Modified off of index2.js by Vivian Chan
-async function updateStatus(sender_psid, status) {
+function updateStatus(sender_psid, status, callback) {
   if (sender_psid != process.env.APP_PSID) {
     const query = {user_id: sender_psid};
     const update = {status: status};
     // true if status is INIT_0, this makes a new document for the sender 
     const options = {upsert: status === "INIT_0"};
 
-    await ChatStatus.findOneAndUpdate(query, update, options).exec((err, cs) => {
+    ChatStatus.findOneAndUpdate(query, update, options).exec((err, cs) => {
       console.log('update status to db: ', cs);
-      return cs
+      callback(sender_psid, status, cs)
     })
   }
 }
