@@ -243,9 +243,14 @@ function runDSEEvent(sender_psid, status, cs) {
   const dseEventObj = new DSEEventObject(sender_psid, status)
   callSendAPI(sender_psid, dseEventObj.response)
   if(dseEventObj.next_trigger) {
-    updateStatus(sender_psid, dseEventObj.next_trigger)
+    updateStatus(sender_psid, dseEventObj.next_trigger, prepareWait)
   }
 }
+
+function prepareWait(sender_psid, status, cs) {
+ console.log("prepareWait running", status, cs)
+}
+
 /** SERVICES & UTILITY FUNCTION **/
 
 // function updateTheCloud(sender_psid,)
