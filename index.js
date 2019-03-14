@@ -271,7 +271,7 @@ function getStatus(sender_psid, callback) {
     ChatStatus.findOne(query, {status: 1}).exec((err, obj) => {
       // console.log('update perference to db: ', obj);
       console.log("inside exec", obj)
-      callback(sender_psid, obj);
+      callback(sender_psid, obj.status);
     })
     // console.log("Getting user doc", await user_doc)
     // return await user_doc;
