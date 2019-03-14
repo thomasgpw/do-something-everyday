@@ -234,8 +234,8 @@ function handlePostback(sender_psid, received_postback) {
   // }
 }
 
-function useStatus (obj) {
-  console.log(obj.status, "the elusive doc_obj.status in useStatus")  
+function useStatus (sender_psid, status) {
+  console.log(status, "the elusive doc_obj.status in useStatus")  
 }
 
 function runDSEEvent(sender_psid, status, cs) {
