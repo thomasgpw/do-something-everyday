@@ -8,7 +8,7 @@
 					"text": "Hi, I'm Do Something Everyday.  What should I call you?"
 				}
 			},
-			"next_trigger": "SAVE_NAME_INIT_1"
+			"next_trigger": "SAVE_NAME-INIT_1"
 		},
 		{
 			"trigger": "INIT_1",
@@ -17,7 +17,7 @@
 					"text": "What have you been working on lately?"
 				}
 			},
-			"next_trigger": "SAVE_GOAD_INIT_1.1"
+			"next_trigger": "SAVE_GOAL-INIT_1.1"
 		},
 		{
 			"trigger": "INIT_1.1",
@@ -48,7 +48,7 @@
 					"text": "What else are you working on?"
 				}
 			},
-			"next_trigger": "SAVE_GOAL_INIT_1.1"
+			"next_trigger": "SAVE_GOAL-INIT_1.1"
 		},
 		{
 			"trigger": "INIT_2",
@@ -58,7 +58,7 @@
 					"text": "What is something that consistently relaxes you?"
 				}
 			},
-			"next_trigger": "SAVE_HOBBY_INIT_2.1"
+			"next_trigger": "SAVE_HOBBY-INIT_2.1"
 		},
 		{
 			"trigger": "INIT_2.1",
@@ -131,7 +131,7 @@
 					"text": "Great, I'll add making connections to our list of your goals"
 				}
 			},
-			"next_trigger": "SAVE_GOAL_CHECK_IN_0"
+			"next_trigger": "SAVE_GOAL-CHECK_IN_0"
 		},
 		{
 			"trigger": "INIT_3.2",
@@ -141,7 +141,7 @@
 					"text": "What's their name?"
 				}
 			},
-			"next_trigger": "SAVE_SUPPORT_INIT_3.2.1"
+			"next_trigger": "SAVE_SUPPORT-INIT_3.2.1"
 		},
 		{
 			"trigger": "INIT_3.2.1",
