@@ -270,7 +270,7 @@ function getName(sender_psid, callback) {
 function callSendAPI(sender_psid, response) {
   console.log("callSendAPI response object", response)
 
-  // Construct the message body
+  // Construct the message recipient
   response.recipient = {  "id": sender_psid  }
 
   // Send the HTTP request to the Messenger Platform
@@ -281,7 +281,7 @@ function callSendAPI(sender_psid, response) {
     "json": response
   }, (err, res, body) => {
     if (!err) {
-      console.log('message sent!')
+      console.log('message sent!', body)
       return Promise.resolve()
     } else {
       console.error("Unable to send message:" + err);
