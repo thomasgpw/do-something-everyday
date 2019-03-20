@@ -298,12 +298,12 @@ function callSendAPI(sender_psid, response) {
     "json": response
   }, (err, res, body) => {
     if (!err) {
-      if(!body.err) {
+      if(!body.error) {
         console.log('message sent!', body)
         return Promise.resolve()
       } else {
-        console.error("Unable to send message:" + body.err);
-        return Promise.reject(body.err);
+        console.error("Unable to send message:" + body.error);
+        return Promise.reject(body.error);
       }
     } else {
       console.error("Unable to send message:" + err);
