@@ -147,6 +147,9 @@ app.get('/:var(privacypolicy)?', (req, res) => {
 
 /**  CONTROLLER LOGIC **/
 
+function fizzle(sender_psid, status, cs) {
+  console.log('next_trigger finished setting ' + status, cs)
+}
 function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     console.log("handleMessage received_message object", received_message)
@@ -200,7 +203,7 @@ function runDSEEvent(sender_psid, status, cs) {
   const dseEventObj = new DSEEventObject(sender_psid, status)
   callSendAPI(sender_psid, dseEventObj.response)
   if(dseEventObj.next_trigger) {
-    updateStatus(sender_psid, dseEventObj.next_trigger)
+    updateStatus(sender_psid, dseEventObj.next_trigger, fizzle)
   }
 }
 /** SERVICES & UTILITY FUNCTION **/
