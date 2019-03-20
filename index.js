@@ -22,7 +22,6 @@
  /*** GLOBAL CONSTANTS & REQUIREMENTS ***/
 
 'use strict';
-// require('dotenv').config();
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -66,11 +65,8 @@ function getEventJSON(sender_psid, trigger) {
   }
 }
 
-
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
-
-
 
 
 /** SITE ROUTING **/
@@ -149,24 +145,13 @@ app.get('/:var(privacypolicy)?', (req, res) => {
 })
 
 
-
-
 /**  CONTROLLER LOGIC **/
 
 function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     console.log("handleMessage received_message object", received_message)
-    getStatus(sender_psid, useStatus)
-    // let response;
-    
-    // // Checks if the message contains text
-    // if (received_message.text) {    
-    //   // Create the payload for a basic text message, which
-    //   // will be added to the body of our request to the Send API
-    //   response = {
-    //     "text": `You sent the message: "${received_message.text}". Now send me an attachment!`
-    //   }
-    // } else if (received_message.attachments) {
+    getStatus(sender_psid, useStatus, received_message)
+    //  if (received_message.attachments) {
     //   // Get the URL of the message attachment
     //   let attachment_url = received_message.attachments[0].payload.url;
     //   response = {
@@ -187,19 +172,7 @@ function handleMessage(sender_psid, received_message) {
     //             {
     //               "type": "postback",
     //               "title": "No!",
-    //               "payload": "no",
-    //             }
-    //           ],
-    //         }]
-    //       }
-    //     }
-    //   }
-    // } else {
-    //   throw "message held neither text nor attachments"
-    // }
-    
-    // // Send the response message
-    // callSendAPI(sender_psid, response);    
+    //               "payload": "no",  
   }
 }
 
@@ -209,33 +182,17 @@ function handlePostback(sender_psid, received_postback) {
   let payload = received_postback.payload;
   console.log("payload is " + payload)
   updateStatus(sender_psid, payload, runDSEEvent)
-  // for(var i = 0; i < text_responses.length; i++) {
-  //   console.log("comparing payload to " + text_responses[i].trigger)
-  //   if (payload == text_responses[i].trigger) {
-  //     console.log("response text should be set equal to " + text_responses[i].response.message.text)
-  //     response = text_responses[i].response
-  //     if (text_responses[i].next_trigger) {
-  //       next_trigger = text_responses[i].next_trigger
-  //       // return callSendAPI.then()
-  //       // updateStatus(sender_psid, next_trigger, callSendAPI, response)
-  //       // console.log("calling callSendAPI")
-  //       try {
-  //         callSendAPI(sender_psid, response)
-  //         updateStatus(sender_psid, next_trigger)
-  //       } catch(err) {
-  //         console.log(err)
-  //       }
-  //     }
-  //   }
-  // }
-  // next_trigger = 
-  // if(!next_trigger){
-  //   console.log("handle_postback broke")
-  // }
 }
 
-function useStatus (obj) {
-  console.log(obj.status, "the elusive doc_obj.status in useStatus")  
+function useStatus(sender_psid, obj, received_message) {
+  let [first_trigger, next_trigger] = obj.status.split('-')
+  console.log('in useStatus, first we ' + first_trigger + ' with ' + received_message)
+  console.log('Then we run ' + next_trigger)
+
+}
+
+function useName(obj) {
+  console.log(obj.name)
 }
 
 function runDSEEvent(sender_psid, status, cs) {
@@ -247,8 +204,6 @@ function runDSEEvent(sender_psid, status, cs) {
   }
 }
 /** SERVICES & UTILITY FUNCTION **/
-
-// function updateTheCloud(sender_psid,)
 
 // Modified off of index2.js by Vivian Chan
 function updateStatus(sender_psid, status, callback) {
@@ -265,16 +220,45 @@ function updateStatus(sender_psid, status, callback) {
   }
 }
 
-function getStatus(sender_psid, callback) {
+function updateName(sender_psid, preferred_name, status, callback) {
+  if (sender_psid != process.env.APP_PSID) {
+    const query = {user_id: sender_psid};
+    const update = {status: status, name: preferred_name};
+    ChatStatus.findOneAndUpdate(query, update).exec((err, cs) => {
+      console.log('update name to db: ', cs);
+      callback(sender_psid, status, cs)
+    })
+  }
+}
+
+function addGoal(sender_psid, goal, status, callback) {
+  if (sender_psid != process.env.APP_PSID) {
+    const query = {user_id: sender_psid};
+    const update = {status: status, $addToSet : {goals: {name: goal, progress: 0, trend: 0}}};
+    ChatStatus.findOneAndUpdate(query, update).exec((err, cs) => {
+      console.log('add goal to db: ', cs);
+      callback(sender_psid, status, cs)
+    })
+  }
+}
+
+function getStatus(sender_psid, callback, received_message) {
   if (sender_psid != process.env.APP_PSID) {
     const query = {user_id: sender_psid};
     ChatStatus.findOne(query, {status: 1}).exec((err, obj) => {
-      // console.log('update perference to db: ', obj);
-      console.log("inside exec", obj)
+      console.log('get status from db: ', cs);
+      callback(sender_psid, obj, received_message);
+    })
+  }
+}
+
+function getName(sender_psid, callback) {
+  if (sender_psid != process.env.APP_PSID) {
+    const query = {user_id: sender_psid};
+    ChatStatus.findOne(query, {name: 1}).exec((err, obj) => {
+      console.log('get name from db: ', cs);
       callback(sender_psid, obj);
     })
-    // console.log("Getting user doc", await user_doc)
-    // return await user_doc;
   }
 }
 
@@ -301,43 +285,3 @@ function callSendAPI(sender_psid, response) {
     }
   });
 }
-
-// function callSendAPIPromise(sen)
-
-// // From index2.js by Vivian Chan
-// function handleGreetingPostback(sender_psid){
-//   request({
-//     url: `${FACEBOOK_GRAPH_API_BASE_URL}${sender_psid}`,
-//     qs: {
-//       access_token: process.env.PAGE_ACCESS_TOKEN,
-//       fields: "first_name"
-//     },
-//     method: "GET"
-//   }, function(error, response, body) {
-//     var greeting = "";
-//     if (error) {
-//       console.log("Error getting user's name: " +  error);
-//     } else {
-//       var bodyObj = JSON.parse(body);
-//       const name = bodyObj.first_name;
-//       greeting = "Hi " + name + ". ";
-//     }
-//     const message = greeting + "Would you like to join a community of like-minded pandas in your area?";
-//     const greetingPayload = {
-//       "text": message,
-//       "quick_replies":[
-//         {
-//           "content_type":"text",
-//           "title":"Yes!",
-//           "payload": START_SEARCH_YES
-//         },
-//         {
-//           "content_type":"text",
-//           "title":"No, thanks.",
-//           "payload": START_SEARCH_NO
-//         }
-//       ]
-//     };
-//     callSendAPI(sender_psid, greetingPayload);
-//   });
-// }
