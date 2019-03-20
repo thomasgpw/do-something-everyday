@@ -154,28 +154,6 @@ function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     console.log("handleMessage received_message object", received_message)
     getStatus(sender_psid, useStatus, received_message)
-    //  if (received_message.attachments) {
-    //   // Get the URL of the message attachment
-    //   let attachment_url = received_message.attachments[0].payload.url;
-    //   response = {
-    //     "attachment": {
-    //       "type": "template",
-    //       "payload": {
-    //         "template_type": "generic",
-    //         "elements": [{
-    //           "title": "Is this the right picture?",
-    //           "subtitle": "Tap a button to answer.",
-    //           "image_url": attachment_url,
-    //           "buttons": [
-    //             {
-    //               "type": "postback",
-    //               "title": "Yes!",
-    //               "payload": "yes",
-    //             },
-    //             {
-    //               "type": "postback",
-    //               "title": "No!",
-    //               "payload": "no",  
   }
 }
 
@@ -189,9 +167,26 @@ function handlePostback(sender_psid, received_postback) {
 
 function useStatus(sender_psid, obj, received_message) {
   let [first_trigger, next_trigger] = obj.status.split('-')
-  console.log('in useStatus, first we ' + first_trigger + ' with ' + received_message)
+  console.log('our first_trigger is ' + toCamel(first_trigger))
+  console.log('in useStatus, received_message is', received_message)
   console.log('Then we run ' + next_trigger)
-
+  window[toCamel(first_trigger)](sender_psid, received_message.text, next_trigger, runDSEEvent)
+  // switch (first_trigger) {
+  //   case 'SAVE_NAME':
+  //     updateName(sender_psid, received_message.text, next_trigger, runDSEEvent);
+  //     break;
+  //   case 'SAVE_GOAL':
+  //     addGoal(sender_psid, received_message.text, next_trigger, runDSEEvent)
+  //     break;
+  //   case 'SAVE_HOBBY':
+  //     addHobby(sender_psid, received_message.text, next_trigger, runDSEEvent)
+  //     break;
+  //   case 'SAVE_SUPPORT':
+  //     addSupport(sender_psid, received_message.text, next_trigger, runDSEEvent)
+  //     break;
+  //   default:
+  //     throw 'useStatus switch failed'
+  // }
 }
 
 function useName(obj) {
@@ -246,6 +241,28 @@ function addGoal(sender_psid, goal, status, callback) {
   }
 }
 
+function addHobby(sender_psid, hobby, status, callback) {
+  if (sender_psid != process.env.APP_PSID) {
+    const query = {user_id: sender_psid};
+    const update = {status: status, $addToSet : {hobbies: {name: hobby, progress: 0, trend: 0}}};
+    ChatStatus.findOneAndUpdate(query, update).exec((err, cs) => {
+      console.log('add hobby to db: ', cs);
+      callback(sender_psid, status, cs)
+    })
+  }
+}
+
+function addSupport(sender_psid, supporter, status, callback) {
+  if (sender_psid != process.env.APP_PSID) {
+    const query = {user_id: sender_psid};
+    const update = {status: status, $addToSet : {supporters: {name: supporter, progress: 0, trend: 0}}};
+    ChatStatus.findOneAndUpdate(query, update).exec((err, cs) => {
+      console.log('add supporter to db: ', cs);
+      callback(sender_psid, status, cs)
+    })
+  }
+}
+
 function getStatus(sender_psid, callback, received_message) {
   if (sender_psid != process.env.APP_PSID) {
     const query = {user_id: sender_psid};
@@ -281,11 +298,25 @@ function callSendAPI(sender_psid, response) {
     "json": response
   }, (err, res, body) => {
     if (!err) {
-      console.log('message sent!', body)
-      return Promise.resolve()
+      if(!body.err) {
+        console.log('message sent!', body)
+        return Promise.resolve()
+      } else {
+        console.error("Unable to send message:" + body.err);
+        return Promise.reject(body.err);
+      }
     } else {
       console.error("Unable to send message:" + err);
       return Promise.reject(err);
     }
   });
 }
+
+// from https://matthiashager.com/converting-snake-case-to-camel-case-object-keys-with-javascript
+const toCamel = (s) => {
+  return s.toLowerCase().replace(/([-_][a-z])/ig, ($1) => {
+    return $1.toUpperCase()
+      .replace('-', '')
+      .replace('_', '');
+  });
+};
