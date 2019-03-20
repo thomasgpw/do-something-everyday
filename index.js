@@ -246,7 +246,7 @@ function getStatus(sender_psid, callback, received_message) {
   if (sender_psid != process.env.APP_PSID) {
     const query = {user_id: sender_psid};
     ChatStatus.findOne(query, {status: 1}).exec((err, obj) => {
-      console.log('get status from db: ', cs);
+      console.log('get status from db: ', obj);
       callback(sender_psid, obj, received_message);
     })
   }
@@ -256,7 +256,7 @@ function getName(sender_psid, callback) {
   if (sender_psid != process.env.APP_PSID) {
     const query = {user_id: sender_psid};
     ChatStatus.findOne(query, {name: 1}).exec((err, obj) => {
-      console.log('get name from db: ', cs);
+      console.log('get name from db: ', obj);
       callback(sender_psid, obj);
     })
   }
