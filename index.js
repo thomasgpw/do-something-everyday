@@ -300,14 +300,11 @@ function callSendAPI(sender_psid, response) {
     if (!err) {
       if(!body.error) {
         console.log('message sent!', body)
-        return Promise.resolve()
       } else {
         console.error("Unable to send message:" + body.error);
-        return Promise.reject(body.error);
       }
     } else {
       console.error("Unable to send message:" + err);
-      return Promise.reject(err);
     }
   });
 }
