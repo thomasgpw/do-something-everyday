@@ -151,7 +151,7 @@ function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     if(received_message.quick_reply) {
       console.log('postback came through as message', received_message.quick_reply.payload)
-      handlePostback(sender_psid, recieved_message.quick_reply)
+      handlePostback(sender_psid, received_message.quick_reply)
     } else {
       console.log("handleMessage received_message object", received_message)
       db_model.getStatus(sender_psid, useStatus, received_message)
