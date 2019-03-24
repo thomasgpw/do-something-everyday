@@ -24,7 +24,6 @@
 'use strict';
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
-const MONGODB_URI = process.env.MONGODB_URI;
 
 // Imports dependencies and set up http server
 const 
@@ -32,12 +31,10 @@ const
   express = require('express'),
   path = require('path'),
   body_parser = require('body-parser'),
-  mongoose = require('mongoose'),
   text_responses = require('./text')["text responses"],
+  db_model = require('./model'),
   app = express().use(body_parser.json()); // creates express http server
 
-var db = mongoose.connect(MONGODB_URI);
-var ChatStatus = require("./models/chatstatus");
 
 class DSEEventObject {
   constructor(sender_psid, trigger) {
@@ -153,7 +150,7 @@ function fizzle(sender_psid, status, cs) {
 function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     console.log("handleMessage received_message object", received_message)
-    getStatus(sender_psid, useStatus, received_message)
+    db_model.getStatus(sender_psid, useStatus, received_message)
   }
 }
 
@@ -162,7 +159,7 @@ function handlePostback(sender_psid, received_postback) {
   // Get the payload for the postback
   let payload = received_postback.payload;
   console.log("payload is " + payload)
-  updateStatus(sender_psid, payload, runDSEEvent)
+  db_model.updateStatus(sender_psid, payload, runDSEEvent)
 }
 
 function useStatus(sender_psid, obj, received_message) {
@@ -170,7 +167,7 @@ function useStatus(sender_psid, obj, received_message) {
   console.log('our first_trigger is ' + toCamel(first_trigger))
   console.log('in useStatus, received_message is', received_message)
   console.log('Then we run ' + next_trigger)
-  window[toCamel(first_trigger)](sender_psid, received_message.text, next_trigger, runDSEEvent)
+  db_model.exports[toCamel(first_trigger)](sender_psid, received_message.text, next_trigger, runDSEEvent)
   // switch (first_trigger) {
   //   case 'SAVE_NAME':
   //     updateName(sender_psid, received_message.text, next_trigger, runDSEEvent);
@@ -198,88 +195,7 @@ function runDSEEvent(sender_psid, status, cs) {
   const dseEventObj = new DSEEventObject(sender_psid, status)
   callSendAPI(sender_psid, dseEventObj.response)
   if(dseEventObj.next_trigger) {
-    updateStatus(sender_psid, dseEventObj.next_trigger, fizzle)
-  }
-}
-
-/** SERVICES & UTILITY FUNCTION **/
-
-// Modified off of index2.js by Vivian Chan
-function updateStatus(sender_psid, status, callback) {
-  if (sender_psid != process.env.APP_PSID) {
-    const query = {user_id: sender_psid};
-    const update = {status: status};
-    // true if status is INIT_0, this makes a new document for the sender 
-    const options = {upsert: status === "INIT_0"};
-
-    ChatStatus.findOneAndUpdate(query, update, options).exec((err, cs) => {
-      console.log('update status to db: ', cs);
-      callback(sender_psid, status, cs)
-    })
-  }
-}
-
-function updateName(sender_psid, preferred_name, status, callback) {
-  if (sender_psid != process.env.APP_PSID) {
-    const query = {user_id: sender_psid};
-    const update = {status: status, name: preferred_name};
-    ChatStatus.findOneAndUpdate(query, update).exec((err, cs) => {
-      console.log('update name to db: ', cs);
-      callback(sender_psid, status, cs)
-    })
-  }
-}
-
-function addGoal(sender_psid, goal, status, callback) {
-  if (sender_psid != process.env.APP_PSID) {
-    const query = {user_id: sender_psid};
-    const update = {status: status, $addToSet : {goals: {name: goal, progress: 0, trend: 0}}};
-    ChatStatus.findOneAndUpdate(query, update).exec((err, cs) => {
-      console.log('add goal to db: ', cs);
-      callback(sender_psid, status, cs)
-    })
-  }
-}
-
-function addHobby(sender_psid, hobby, status, callback) {
-  if (sender_psid != process.env.APP_PSID) {
-    const query = {user_id: sender_psid};
-    const update = {status: status, $addToSet : {hobbies: {name: hobby, progress: 0, trend: 0}}};
-    ChatStatus.findOneAndUpdate(query, update).exec((err, cs) => {
-      console.log('add hobby to db: ', cs);
-      callback(sender_psid, status, cs)
-    })
-  }
-}
-
-function addSupport(sender_psid, supporter, status, callback) {
-  if (sender_psid != process.env.APP_PSID) {
-    const query = {user_id: sender_psid};
-    const update = {status: status, $addToSet : {supporters: {name: supporter, progress: 0, trend: 0}}};
-    ChatStatus.findOneAndUpdate(query, update).exec((err, cs) => {
-      console.log('add supporter to db: ', cs);
-      callback(sender_psid, status, cs)
-    })
-  }
-}
-
-function getStatus(sender_psid, callback, received_message) {
-  if (sender_psid != process.env.APP_PSID) {
-    const query = {user_id: sender_psid};
-    ChatStatus.findOne(query, {status: 1}).exec((err, obj) => {
-      console.log('get status from db: ', obj);
-      callback(sender_psid, obj, received_message);
-    })
-  }
-}
-
-function getName(sender_psid, callback) {
-  if (sender_psid != process.env.APP_PSID) {
-    const query = {user_id: sender_psid};
-    ChatStatus.findOne(query, {name: 1}).exec((err, obj) => {
-      console.log('get name from db: ', obj);
-      callback(sender_psid, obj);
-    })
+    db_model.updateStatus(sender_psid, dseEventObj.next_trigger, fizzle)
   }
 }
 
