@@ -31,6 +31,7 @@ const
   express = require('express'),
   path = require('path'),
   body_parser = require('body-parser'),
+  simpleCrypto = new require("simple-crypto-js").default('arbitrary string'),
   text_responses = require('./text')["text responses"],
   db_model = require('./model'),
   app = express().use(body_parser.json()); // creates express http server
@@ -93,7 +94,6 @@ app.post('/webhook', (req, res) => {
       } else if (webhook_event.postback) {
         handlePostback(sender_psid, webhook_event.postback);
       }
-      
     });
     // Return a '200 OK' response to all events
     res.status(200).send('EVENT_RECEIVED');
@@ -147,12 +147,15 @@ app.get('/:var(privacypolicy)?', (req, res) => {
 function fizzle(sender_psid, status, cs) {
   console.log('next_trigger finished setting ' + status, cs)
 }
+
 function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     if(received_message.quick_reply) {
       console.log('postback came through as message', received_message.quick_reply.payload)
       handlePostback(sender_psid, received_message.quick_reply)
     } else {
+      simpleCrypto.setSecret(sender_psid+'DSE')
+      received_message.text = simpleCrypto.encrypt(received_message.text)
       console.log("handleMessage received_message object", received_message)
       db_model.getStatus(sender_psid, useStatus, received_message)
     }
@@ -171,28 +174,15 @@ function useStatus(sender_psid, obj, received_message) {
   let [first_trigger, next_trigger] = obj.status.split('-')
   console.log('our first_trigger is ' + toCamel(first_trigger))
   console.log('in useStatus, received_message is', received_message)
+
   console.log('Then we run ' + next_trigger)
   db_model[toCamel(first_trigger)](sender_psid, received_message.text, next_trigger, runDSEEvent)
-  // switch (first_trigger) {
-  //   case 'SAVE_NAME':
-  //     updateName(sender_psid, received_message.text, next_trigger, runDSEEvent);
-  //     break;
-  //   case 'SAVE_GOAL':
-  //     addGoal(sender_psid, received_message.text, next_trigger, runDSEEvent)
-  //     break;
-  //   case 'SAVE_HOBBY':
-  //     addHobby(sender_psid, received_message.text, next_trigger, runDSEEvent)
-  //     break;
-  //   case 'SAVE_SUPPORT':
-  //     addSupport(sender_psid, received_message.text, next_trigger, runDSEEvent)
-  //     break;
-  //   default:
-  //     throw 'useStatus switch failed'
-  // }
 }
 
-function useName(obj) {
-  console.log(obj.name)
+function useName(sender_psid, obj) {
+  simpleCrypto.setSecret(sender_psid+'DSE')
+  const real_name = simpleCrypto.decrypt(obj.name)
+  console.log(real_name)
 }
 
 function runDSEEvent(sender_psid, status, cs) {
@@ -200,7 +190,14 @@ function runDSEEvent(sender_psid, status, cs) {
   const dseEventObj = new DSEEventObject(sender_psid, status)
   callSendAPI(sender_psid, dseEventObj.response)
   if(dseEventObj.next_trigger) {
-    db_model.updateStatus(sender_psid, dseEventObj.next_trigger, fizzle)
+    const next_trigger = dseEventObj.next_trigger
+    if (next_trigger.includes('-')) {
+      // applies if we are now expecting to wait to receive input as a user typed message
+      db_model.updateStatus(sender_psid_psid, next_trigger, fizzle)
+    } else {
+      // applies if chaining multiple messages without waiting
+      handlePostback(sender_psid, nest_trigger)
+    }
   }
 }
 
