@@ -167,7 +167,7 @@ function useStatus(sender_psid, obj, received_message) {
   console.log('our first_trigger is ' + toCamel(first_trigger))
   console.log('in useStatus, received_message is', received_message)
   console.log('Then we run ' + next_trigger)
-  db_model.exports[toCamel(first_trigger)](sender_psid, received_message.text, next_trigger, runDSEEvent)
+  db_model[toCamel(first_trigger)](sender_psid, received_message.text, next_trigger, runDSEEvent)
   // switch (first_trigger) {
   //   case 'SAVE_NAME':
   //     updateName(sender_psid, received_message.text, next_trigger, runDSEEvent);
