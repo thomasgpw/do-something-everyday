@@ -63,6 +63,15 @@ function getEventJSON(sender_psid, trigger) {
   }
 }
 
+// from https://matthiashager.com/converting-snake-case-to-camel-case-object-keys-with-javascript
+const toCamel = (s) => {
+  return s.toLowerCase().replace(/([-_][a-z])/ig, ($1) => {
+    return $1.toUpperCase()
+      .replace('-', '')
+      .replace('_', '');
+  });
+};
+
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
 
@@ -155,9 +164,10 @@ function handleMessage(sender_psid, received_message) {
       handlePostback(sender_psid, received_message.quick_reply)
     } else {
       simpleCrypto.setSecret(sender_psid+'DSE')
-      received_message.text = simpleCrypto.encrypt(received_message.text)
-      console.log("handleMessage received_message object", received_message)
-      db_model.getStatus(sender_psid, useStatus, received_message)
+      
+      received_text = simpleCrypto.encrypt(received_message.text)
+      console.log("handleMessage encoded received_text string", received_text)
+      db_model.getStatus(sender_psid, useStatus, received_text)
     }
   }
 }
@@ -170,13 +180,13 @@ function handlePostback(sender_psid, received_postback) {
   db_model.updateStatus(sender_psid, payload, runDSEEvent)
 }
 
-function useStatus(sender_psid, obj, received_message) {
+function useStatus(sender_psid, obj, received_text) {
   let [first_trigger, next_trigger] = obj.status.split('-')
   console.log('our first_trigger is ' + toCamel(first_trigger))
-  console.log('in useStatus, received_message is', received_message)
+  console.log('in useStatus, received_text is', received_text)
 
   console.log('Then we run ' + next_trigger)
-  db_model[toCamel(first_trigger)](sender_psid, received_message.text, next_trigger, runDSEEvent)
+  db_model[toCamel(first_trigger)](sender_psid, received_text, next_trigger, runDSEEvent)
 }
 
 function useName(sender_psid, obj) {
@@ -226,12 +236,3 @@ function callSendAPI(sender_psid, response) {
     }
   });
 }
-
-// from https://matthiashager.com/converting-snake-case-to-camel-case-object-keys-with-javascript
-const toCamel = (s) => {
-  return s.toLowerCase().replace(/([-_][a-z])/ig, ($1) => {
-    return $1.toUpperCase()
-      .replace('-', '')
-      .replace('_', '');
-  });
-};
