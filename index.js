@@ -31,7 +31,7 @@ const
   express = require('express'),
   path = require('path'),
   body_parser = require('body-parser'),
-  simpleCrypto = new require("simple-crypto-js").default('arbitrary string'),
+  SimpleCrypto = require("simple-crypto-js").default,
   text_responses = require('./text')["text responses"],
   db_model = require('./model'),
   app = express().use(body_parser.json()); // creates express http server
@@ -163,8 +163,7 @@ function handleMessage(sender_psid, received_message) {
       console.log('postback came through as message', received_message.quick_reply.payload)
       handlePostback(sender_psid, received_message.quick_reply)
     } else {
-      simpleCrypto.setSecret(sender_psid+'DSE')
-      
+      simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
       received_text = simpleCrypto.encrypt(received_message.text)
       console.log("handleMessage encoded received_text string", received_text)
       db_model.getStatus(sender_psid, useStatus, received_text)
@@ -190,7 +189,7 @@ function useStatus(sender_psid, obj, received_text) {
 }
 
 function useName(sender_psid, obj) {
-  simpleCrypto.setSecret(sender_psid+'DSE')
+  simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
   const real_name = simpleCrypto.decrypt(obj.name)
   console.log(real_name)
 }
