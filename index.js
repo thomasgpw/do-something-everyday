@@ -203,7 +203,7 @@ function runDSEEvent(sender_psid, status, cs) {
     const next_trigger = dseEventObj.next_trigger
     if (next_trigger.includes('-')) {
       // applies if we are now expecting to wait to receive input as a user typed message
-      db_model.updateStatus(sender_psid_psid, next_trigger, fizzle)
+      db_model.updateStatus(sender_psid, next_trigger, fizzle)
     } else {
       // applies if chaining multiple messages without waiting
       handlePostback(sender_psid, nest_trigger)
