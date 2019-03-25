@@ -163,7 +163,7 @@ function handleMessage(sender_psid, received_message) {
       console.log('postback came through as message', received_message.quick_reply.payload)
       handlePostback(sender_psid, received_message.quick_reply)
     } else {
-      simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
+      const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
       received_text = simpleCrypto.encrypt(received_message.text)
       console.log("handleMessage encoded received_text string", received_text)
       db_model.getStatus(sender_psid, useStatus, received_text)
@@ -189,7 +189,7 @@ function useStatus(sender_psid, obj, received_text) {
 }
 
 function useName(sender_psid, obj) {
-  simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
+  const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
   const real_name = simpleCrypto.decrypt(obj.name)
   console.log(real_name)
 }
