@@ -164,7 +164,7 @@ function handleMessage(sender_psid, received_message) {
       handlePostback(sender_psid, received_message.quick_reply)
     } else {
       const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
-      received_text = simpleCrypto.encrypt(received_message.text)
+      const received_text = simpleCrypto.encrypt(received_message.text)
       console.log("handleMessage encoded received_text string", received_text)
       db_model.getStatus(sender_psid, useStatus, received_text)
     }
