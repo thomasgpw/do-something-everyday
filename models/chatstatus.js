@@ -6,17 +6,17 @@ var ChatStatusSchema = new Schema({
   name: String,
   status: String,
   goals: [{
-  	name: String,
+  	name: { type: String, unique: true },
   	progress: Number,
   	trend: Number
   }],
   hobbies: [{
-  	name: String,
+  	name: { type: String, unique: true },
   	progress: Number,
   	trend: Number
   }],
   supporters: [{
-  	name: String,
+  	name: { type: String, unique: true },
   	progress: Number,
   	trend: Number
   }]

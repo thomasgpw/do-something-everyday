@@ -32,6 +32,7 @@ const
   path = require('path'),
   body_parser = require('body-parser'),
   SimpleCrypto = require("simple-crypto-js").default,
+  winston = require('winston'),
   text_responses = require('./text')["text responses"],
   db_model = require('./model'),
   app = express().use(body_parser.json()); // creates express http server
@@ -55,9 +56,8 @@ class DSEEventObject {
 
 function getEventJSON(sender_psid, trigger) {
   for(var i = 0; i < text_responses.length; i++) {
-    console.log("comparing payload to " + text_responses[i].trigger)
     if (trigger == text_responses[i].trigger) {
-      console.log("response text should be set equal to " + text_responses[i].response.message.text)
+      winston.log('info', "response text should be set equal to " + text_responses[i].response.message.text)
       return text_responses[i]
     }
   }
@@ -73,7 +73,7 @@ const toCamel = (s) => {
 };
 
 // Sets server port and logs message on success
-app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
+app.listen(process.env.PORT || 1337, () => winston.log('info','webhook is listening'));
 
 
 /** SITE ROUTING **/
@@ -91,7 +91,7 @@ app.post('/webhook', (req, res) => {
 
       // Gets the body of the webhook event
       let webhook_event = entry.messaging[0];
-      console.log("webhook event object:",webhook_event);
+      winston.log('info', "webhook event object:",webhook_event);
 
       // Get the sender PSID
       let sender_psid = webhook_event.sender.id;
@@ -118,7 +118,7 @@ app.post('/webhook', (req, res) => {
 
 // Accepts GET requests at the /webhook endpoint
 app.get('/webhook', (req, res) => {
-  console.log("app.get at /webhook request object", req)
+  winston.log('info', "app.get at /webhook request object", req)
 
   /** UPDATE YOUR VERIFY TOKEN **/
   const VERIFY_TOKEN = process.env.VERIFICATION_TOKEN;
@@ -135,7 +135,7 @@ app.get('/webhook', (req, res) => {
     if (mode === 'subscribe' && token === VERIFY_TOKEN) {
       
       // Respond with 200 OK and challenge token from the request
-      console.log('WEBHOOK_VERIFIED');
+      winston.log('info','WEBHOOK_VERIFIED');
       res.status(200).send(challenge);
     
     } else {
@@ -154,55 +154,67 @@ app.get('/:var(privacypolicy)?', (req, res) => {
 /**  CONTROLLER LOGIC **/
 
 function fizzle(sender_psid, status, cs) {
-  console.log('next_trigger finished setting ' + status, cs)
+  winston.log('info','next_trigger finished setting ' + status, cs)
 }
 
 function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     if(received_message.quick_reply) {
-      console.log('postback came through as message', received_message.quick_reply.payload)
+      winston.log('info','postback came through as message', received_message.quick_reply.payload)
       handlePostback(sender_psid, received_message.quick_reply)
     } else {
       const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
       const received_text = simpleCrypto.encrypt(received_message.text)
-      console.log("handleMessage encoded received_text string", received_text)
-      db_model.getStatus(sender_psid, useStatus, received_text)
+      winston.log('info', "handleMessage encoded received_text string", received_text)
+      db_model.getStatus(sender_psid, useStatus, received_text, winston)
     }
   }
 }
 
 function handlePostback(sender_psid, received_postback) {
-  console.log("handleMessage received_postback object", received_postback)
   // Get the payload for the postback
   let payload = received_postback.payload;
-  console.log("payload is " + payload)
-  db_model.updateStatus(sender_psid, payload, runDSEEvent)
+  winston.log('info', "payload is " + payload)
+  db_model.updateStatus(sender_psid, payload, runDSEEvent, winston)
+}
+
+function requestMongoData(sender_psid, response, text_tags, callback) {
+    var tag_replacements = text_tags.slice(0)
+    text_tags.forEach((tag, i) => {
+      
+    })
 }
 
 function useStatus(sender_psid, obj, received_text) {
   let [first_trigger, next_trigger] = obj.status.split('-')
-  console.log('our first_trigger is ' + toCamel(first_trigger))
-  console.log('in useStatus, received_text is', received_text)
+  winston.log('info','our first_trigger is ' + toCamel(first_trigger))
+  winston.log('info','in useStatus, received_text is', received_text)
 
-  console.log('Then we run ' + next_trigger)
-  db_model[toCamel(first_trigger)](sender_psid, received_text, next_trigger, runDSEEvent)
+  winston.log('info','Then we run ' + next_trigger)
+  db_model[toCamel(first_trigger)](sender_psid, received_text, next_trigger, runDSEEvent, winston)
 }
 
 function useName(sender_psid, obj) {
   const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
   const real_name = simpleCrypto.decrypt(obj.name)
-  console.log(real_name)
+  winston.log('info', real_name)
 }
 
 function runDSEEvent(sender_psid, status, cs) {
-  console.log("inside runDSEEvent callback.  cs is ", cs)
+  winston.log('info', "inside runDSEEvent callback.  cs is ", cs)
   const dseEventObj = new DSEEventObject(sender_psid, status)
+  
+  const text_tags = dseEventObj.response.match(/\/([A-Z]+)\//g)
+  if (text_tags) {
+
+  }
+
   callSendAPI(sender_psid, dseEventObj.response)
   if(dseEventObj.next_trigger) {
     const next_trigger = dseEventObj.next_trigger
     if (next_trigger.includes('-')) {
       // applies if we are now expecting to wait to receive input as a user typed message
-      db_model.updateStatus(sender_psid, next_trigger, fizzle)
+      db_model.updateStatus(sender_psid, next_trigger, fizzle, winston)
     } else {
       // applies if chaining multiple messages without waiting
       handlePostback(sender_psid, nest_trigger)
@@ -212,7 +224,7 @@ function runDSEEvent(sender_psid, status, cs) {
 
 // Modified off of index2.js by Vivian Chan
 function callSendAPI(sender_psid, response) {
-  console.log("callSendAPI response object", response)
+  winston.log('info', "callSendAPI response object", response)
 
   // Construct the message recipient
   response.recipient = {  "id": sender_psid  }
@@ -226,12 +238,12 @@ function callSendAPI(sender_psid, response) {
   }, (err, res, body) => {
     if (!err) {
       if(!body.error) {
-        console.log('message sent!', body)
+        winston.log('info','message sent!', body)
       } else {
-        console.error("Unable to send message:" + body.error);
+        winston.error('info', "Unable to send message:" + body.error);
       }
     } else {
-      console.error("Unable to send message:" + err);
+      winston.error('info', "Unable to send message:" + err);
     }
   });
 }

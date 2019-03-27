@@ -5,16 +5,57 @@
 			"response": {
 				"messaging_type": "RESPONSE",
 				"message": {
-					"text": "Hi, I'm Do Something Everyday.  What should I call you?"
+					"text": "Hi, I'm Do Something Everyday.  I am here to provide robotic personal reminders to help you track if you do something everyday."
 				}
 			},
-			"next_trigger": "UPDATE_NAME-INIT_1"
+			"next_trigger": "INIT_0.1"
+		},
+		{
+			"trigger": "INIT_0.1",
+			"response": {
+				"messaging_type": "RESPONSE",
+				"message": {
+					"text": "I am very literal so please be brief when answering my questions.  With that in mind, what should I call you?"
+				}
+			},
+			"next_trigger": "UPDATE_NAME-INIT_0.2"
+		},
+		{
+			"trigger": "INIT_0.2",
+			"response": {
+				"messaging_type": "RESPONSE",
+				"message": {
+					"text": "I should call you /NAME/?.",
+					"quick_replies": [
+						{
+							"content_type": "text",
+							"title": "Yes",
+							"payload": "INIT_0.3"
+						},
+						{
+							"content_type": "text",
+							"title": "No, let me change that.",
+							"payload": "INIT_0.1"
+						}
+					]
+				}
+			},
+		},
+		{
+			"trigger": "INIT_0.3",
+			"response": {
+				"messaging_type": "RESPONSE",
+				"message": {
+					"text": "You got it /NAME/.  I've memorized that now. Any information you send to me stored. Thomas encrypted any data I get so he wont accidentally see it and he promises it will stay that way."
+				}
+			},
+			"next_trigger": "INIT_1"
 		},
 		{
 			"trigger": "INIT_1",
 			"response": {
 				"message": {
-					"text": "What have you been working on lately?"
+					"text": "So, what have you been working on lately?"
 				}
 			},
 			"next_trigger": "ADD_GOAL-INIT_1.1"
