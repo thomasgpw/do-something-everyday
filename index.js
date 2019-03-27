@@ -207,8 +207,8 @@ function useName(sender_psid, obj) {
 function runDSEEvent(sender_psid, status, cs) {
   logger.log('info', "inside runDSEEvent callback.  cs is ", cs)
   const dseEventObj = new DSEEventObject(sender_psid, status)
-  
-  const text_tags = String(dseEventObj.response).match(/\/([A-Z]+)\//g)
+  var response_text = dseEventObj.response.message.text
+  const text_tags = response_text.match(/\/([A-Z]+)\//g)
   if (text_tags) {
 
   }
@@ -221,7 +221,7 @@ function runDSEEvent(sender_psid, status, cs) {
       db_model.updateStatus(sender_psid, next_trigger, fizzle, logger)
     } else {
       // applies if chaining multiple messages without waiting
-      handlePostback(sender_psid, nest_trigger)
+      handlePostback(sender_psid, next_trigger)
     }
   }
 }
