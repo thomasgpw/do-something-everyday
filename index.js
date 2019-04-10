@@ -31,9 +31,9 @@ const
   express = require('express'),
   path = require('path'),
   body_parser = require('body-parser'),
-  SimpleCrypto = require("simple-crypto-js").default,
+  SimpleCrypto = require('simple-crypto-js').default,
   winston = require('winston'),
-  text_responses = require('./text')["text responses"],
+  text_responses = require('./text')['text responses'],
   db_model = require('./model'),
   app = express().use(body_parser.json()), // creates express http server
   logger = winston.createLogger({
@@ -64,7 +64,7 @@ function getEventJSON(sender_psid, trigger) {
   logger.log('info', 'at getEventJSON function from trigger ' + trigger)
   for(var i = 0; i < text_responses.length; i++) {
     if (trigger == text_responses[i].trigger) {
-      logger.log('info', "response text should be set equal to " + text_responses[i].response.message.text)
+      logger.log('info', 'response text should be set equal to ' + text_responses[i].response.message.text)
       return text_responses[i]
     }
   }
@@ -98,7 +98,7 @@ app.post('/webhook', (req, res) => {
 
       // Gets the body of the webhook event
       let webhook_event = entry.messaging[0];
-      logger.log('info', " post to webhook event object:", webhook_event);
+      logger.log('info', ' post to webhook event object:',{ 'webhook_event': webhook_event});
 
       // Get the sender PSID
       let sender_psid = webhook_event.sender.id;
@@ -125,7 +125,7 @@ app.post('/webhook', (req, res) => {
 
 // Accepts GET requests at the /webhook endpoint
 app.get('/webhook', (req, res) => {
-  logger.log('info', "app.get at /webhook request object", req)
+  logger.log({'level': 'info', 'message': 'app.get at /webhook request object', 'req':req})
 
   /** UPDATE YOUR VERIFY TOKEN **/
   const VERIFY_TOKEN = process.env.VERIFICATION_TOKEN;
@@ -154,7 +154,7 @@ app.get('/webhook', (req, res) => {
 
 // Accepts GET requests at the / and /privacypolicy endpoint
 app.get('/:var(privacypolicy)?', (req, res) => {
-  res.sendFile(path.join(__dirname, "privacypolicy.html"))
+  res.sendFile(path.join(__dirname, 'privacypolicy.html'))
 })
 
 
@@ -168,12 +168,12 @@ function handleMessage(sender_psid, received_message) {
   if (!received_message.is_echo) {
     logger.log('info', 'at handleMessage function')
     if(received_message.quick_reply) {
-      logger.log('info','postback came through as message', received_message.quick_reply.payload)
+      logger.log('info','postback came through as message ' + received_message.quick_reply.payload)
       handlePostback(sender_psid, received_message.quick_reply.payload)
     } else {
       const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
       const received_text = simpleCrypto.encrypt(received_message.text)
-      logger.log('info', "handleMessage encoded received_text string", received_text)
+      logger.log('info', 'handleMessage encoded received_text string is ' + received_text)
       db_model.getStatus(sender_psid, useStatus, received_text, logger)
     }
   }
@@ -181,12 +181,12 @@ function handleMessage(sender_psid, received_message) {
 
 function handlePostback(sender_psid, payload) {
   // Get the payload for the postback
-  logger.log('info', "at handlePostback payload is " + payload)
+  logger.log('info', 'at handlePostback payload is ' + payload)
   db_model.updateStatus(sender_psid, payload, runDSEEvent, logger)
 }
 
 function requestMongoData(sender_psid, response, text_tags, callback) {
-  logger.log('info', 'at requestMongoData function with response ' + response, text_tags)  
+  logger.log('info', 'at requestMongoData function with response ' + response, {'text_tags': text_tags})  
   var tag_replacements = text_tags.slice(0)
   text_tags.forEach((tag, i) => {
     
@@ -195,23 +195,23 @@ function requestMongoData(sender_psid, response, text_tags, callback) {
 
 function useStatus(sender_psid, obj, received_text) {
   let [first_trigger, next_trigger] = obj.status.split('-')
-  logger.log('info','in useStatus our first_trigger is ' + toCamel(first_trigger) + ' Then we run ' + next_trigger, received_text)
+  logger.log('info','in useStatus', { 'first_trigger': toCamel(first_trigger), 'next_trigger': next_trigger, 'received_text': received_text})
   db_model[toCamel(first_trigger)](sender_psid, received_text, next_trigger, runDSEEvent, logger)
 }
 
 function useName(sender_psid, obj) {
   const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
   const real_name = simpleCrypto.decrypt(obj.name)
-  logger.log('info', 'in useName', real_name)
+  logger.log('info', 'in useName name is ' + real_name)
 }
 
 function runDSEEvent(sender_psid, status, cs) {
-  logger.log('info', "inside runDSEEvent callback")
+  logger.log('info', 'inside runDSEEvent callback')
   const dseEventObj = new DSEEventObject(sender_psid, status)
   var response_text = dseEventObj.response.message.text
   const text_tags = response_text.match(/\/([A-Z]+)\//g)
   if (text_tags) {
-    logger.log('info', 'inside runDSEEvent we have text tags', text_tags)
+
   }
 
   callSendAPI(sender_psid, dseEventObj)
@@ -220,17 +220,17 @@ function runDSEEvent(sender_psid, status, cs) {
 // Modified off of index2.js by Vivian Chan
 function callSendAPI(sender_psid, dseEventObj) {
   const response = dseEventObj.response
-  logger.log('info', "in callSendAPI response object", response.message.text)
+  logger.log('info', 'in callSendAPI response object message is ' + response.message.text)
 
   // Construct the message recipient
-  response.recipient = {  "id": sender_psid  }
+  response.recipient = {  'id': sender_psid  }
 
   // Send the HTTP request to the Messenger Platform
   return request({
-    "uri": "https://graph.facebook.com/v2.6/me/messages",
-    "qs": { "access_token": PAGE_ACCESS_TOKEN },
-    "method": "POST",
-    "json": response
+    'uri': 'https://graph.facebook.com/v2.6/me/messages',
+    'qs': { 'access_token': PAGE_ACCESS_TOKEN },
+    'method': 'POST',
+    'json': response
   }, (err, res, body) => {
     if (!err) {
       if(!body.error) {
@@ -248,10 +248,10 @@ function callSendAPI(sender_psid, dseEventObj) {
           }
         }
       } else {
-        logger.error('info', "Unable to send message:" + body.error);
+        logger.error('info', 'Unable to send message:', { 'err': body.error});
       }
     } else {
-      logger.error('info', "Unable to send message:" + err);
+      logger.error('info', 'Unable to send message:',  {'err': err});
     }
   });
 }
