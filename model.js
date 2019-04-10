@@ -116,5 +116,13 @@ module.exports = {
 	'addHobby': addHobby,
 	'addSupport': addSupport,
 	'getStatus': getStatus,
-	'getName': getName
+	'getName': getName,
+  'byTag': function (sender_psid, tag, logger) {
+    logger.log('info', 'inside db_model.byTag with tag ' + tag)
+    const _TAG_REFERENCE = {
+      '/NAME/': {'func': getName, 'callback': useName}
+    }
+    const tag_instructions = _TAG_REFERENCE[tag]
+    return tag_instructions.func(sender_psid, tag_instructions.callback, logger)
+  }
 }

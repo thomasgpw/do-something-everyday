@@ -185,18 +185,23 @@ function handlePostback(sender_psid, payload) {
   db_model.updateStatus(sender_psid, payload, runDSEEvent, logger)
 }
 
-function requestMongoData(sender_psid, response, text_tags, callback) {
-  logger.log('info', 'at requestMongoData function with response ' + response, {'text_tags': text_tags})  
+function requestMongoData(sender_psid, dseEventObj, text_tags, callback) {
+  logger.log('info', 'at requestMongoData function with response ' + dseEventObj.response.message.text, {'text_tags': text_tags})  
   var tag_replacements = text_tags.slice(0)
   text_tags.forEach((tag, i) => {
-    
+    tag_replacements[i] = db_model.byTag(sender_psid, tag, logger)
   })
 }
 
 function useStatus(sender_psid, obj, received_text) {
-  let [first_trigger, next_trigger] = obj.status.split('-')
-  logger.log('info','in useStatus', { 'first_trigger': toCamel(first_trigger), 'next_trigger': next_trigger, 'received_text': received_text})
-  db_model[toCamel(first_trigger)](sender_psid, received_text, next_trigger, runDSEEvent, logger)
+  const status = obj.status
+  if (status.includes('-')) {
+    let [first_trigger, next_trigger] = status.split('-')
+    logger.log('info','in useStatus', { 'first_trigger': toCamel(first_trigger), 'next_trigger': next_trigger, 'received_text': received_text})
+    db_model[toCamel(first_trigger)](sender_psid, received_text, next_trigger, runDSEEvent, logger)
+  } else {
+    logger.log('info', 'recieved unexpected input message', {'status': status, 'received_text': received_text})
+  }
 }
 
 function useName(sender_psid, obj) {
@@ -211,10 +216,10 @@ function runDSEEvent(sender_psid, status, cs) {
   var response_text = dseEventObj.response.message.text
   const text_tags = response_text.match(/\/([A-Z]+)\//g)
   if (text_tags) {
-
+    requestMongoData(sender_psid, dseEventObj, text_tags, callSendAPI)
+  } else {
+    callSendAPI(sender_psid, dseEventObj)
   }
-
-  callSendAPI(sender_psid, dseEventObj)
 }
 
 // Modified off of index2.js by Vivian Chan
