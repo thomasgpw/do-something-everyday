@@ -45,7 +45,7 @@ const
 
 class DSEEventObject {
   constructor(sender_psid, trigger) {
-    logger.log('info', 'at DSEEventObject constructor from trigger', trigger)
+    logger.log('info', 'at DSEEventObject constructor from trigger ' + trigger)
     this._sender_psid = sender_psid
     this._jsonObj = getEventJSON(sender_psid, trigger)
   }
@@ -61,7 +61,7 @@ class DSEEventObject {
 }
 
 function getEventJSON(sender_psid, trigger) {
-  logger.log('info', 'at getEventJSON function from trigger', trigger)
+  logger.log('info', 'at getEventJSON function from trigger ' + trigger)
   for(var i = 0; i < text_responses.length; i++) {
     if (trigger == text_responses[i].trigger) {
       logger.log('info', "response text should be set equal to " + text_responses[i].response.message.text)
@@ -230,7 +230,7 @@ function runDSEEvent(sender_psid, status, cs) {
 
 // Modified off of index2.js by Vivian Chan
 function callSendAPI(sender_psid, response) {
-  logger.log('info', "in callSendAPI response object", response)
+  logger.log('info', "in callSendAPI response object", response.message.text)
 
   // Construct the message recipient
   response.recipient = {  "id": sender_psid  }
