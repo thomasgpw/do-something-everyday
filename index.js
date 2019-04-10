@@ -212,7 +212,7 @@ function runDSEEvent(sender_psid, status, cs) {
   var response_text = dseEventObj.response.message.text
   const text_tags = response_text.match(/\/([A-Z]+)\//g)
   if (text_tags) {
-    logger.log('info', 'instide runDSEEvent we have text tags', text_tags)
+    logger.log('info', 'inside runDSEEvent we have text tags', text_tags)
   }
 
   callSendAPI(sender_psid, dseEventObj)
@@ -235,18 +235,19 @@ function callSendAPI(sender_psid, dseEventObj) {
   }, (err, res, body) => {
     if (!err) {
       if(!body.error) {
-        logger.log('info','message sent!', body)
-        logger.log('info', 'whats in this res object?', res)
+        logger.log('info','message sent!')
+        logger.log({'level': 'debug', 'message':'whats in this res object?','res': res})
         if(dseEventObj.next_trigger) {
-        const next_trigger = dseEventObj.next_trigger
-        if (next_trigger.includes('-')) {
-          // applies if we are now expecting to wait to receive input as a user typed message
-          db_model.updateStatus(sender_psid, next_trigger, fizzle, logger)
-        } else {
-          // applies if chaining multiple messages without waiting
-          handlePostback(sender_psid, next_trigger)
+          const next_trigger = dseEventObj.next_trigger
+          logger.log('info', 'in callback of request in callSendAPI next_trigger is ' + next_trigger)
+          if (next_trigger.includes('-')) {
+            // applies if we are now expecting to wait to receive input as a user typed message
+            db_model.updateStatus(sender_psid, next_trigger, fizzle, logger)
+          } else {
+            // applies if chaining multiple messages without waiting
+            handlePostback(sender_psid, next_trigger)
+          }
         }
-      }
       } else {
         logger.error('info', "Unable to send message:" + body.error);
       }
