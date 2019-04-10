@@ -122,8 +122,9 @@ module.exports = {
     const _TAG_REFERENCE = {
       '/NAME/': getName
     }
-    return _TAG_REFERENCE[tag](sender_psid, (res) => {
-      return res
+    return _TAG_REFERENCE[tag](sender_psid, (sender_psid, obj) => {
+      logger.log('info', 'inside callback of _TAG_REFERENCE[tag] in byTag with obj', {'obj': obj})
+      return obj
     }, logger)
   }
 }
