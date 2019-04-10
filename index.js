@@ -189,7 +189,7 @@ function requestMongoData(sender_psid, dseEventObj, text_tags, callback) {
   logger.log('info', 'at requestMongoData function with response ' + dseEventObj.response.message.text, {'text_tags': text_tags})  
   var tag_replacements = text_tags.slice(0)
   text_tags.forEach((tag, i) => {
-    tag_replacements[i] = db_model.byTag(sender_psid, tag, useName, logger)
+    tag_replacements[i] = useName(sender_psid, db_model.byTag(sender_psid, tag, logger))
   })
 }
 
