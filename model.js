@@ -117,12 +117,11 @@ module.exports = {
 	'addSupport': addSupport,
 	'getStatus': getStatus,
 	'getName': getName,
-  'byTag': function (sender_psid, tag, logger) {
+  'byTag': function (sender_psid, tag, callback, logger) {
     logger.log('info', 'inside db_model.byTag with tag ' + tag)
     const _TAG_REFERENCE = {
-      '/NAME/': {'func': getName, 'callback': useName}
+      '/NAME/': getName
     }
-    const tag_instructions = _TAG_REFERENCE[tag]
-    return tag_instructions.func(sender_psid, tag_instructions.callback, logger)
+    return _TAG_REFERENCE[tag](sender_psid, callback, logger)
   }
 }
