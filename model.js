@@ -124,7 +124,7 @@ module.exports = {
     }
     return _TAG_REFERENCE[tag](sender_psid, (sender_psid, obj) => {
       logger.log('info', 'inside callback of _TAG_REFERENCE[tag] in byTag with obj', {'obj': obj})
-      return obj
+      return (sender_psid, obj)
     }, logger)
   }
 }
