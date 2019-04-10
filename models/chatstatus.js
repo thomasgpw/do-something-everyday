@@ -3,22 +3,22 @@ var Schema = mongoose.Schema;
 
 var ChatStatusSchema = new Schema({
   user_id: { type: String, unique: true },
-  name: String,
+  name: { type: String, required: true },
   status: String,
   goals: [{
   	name: { type: String, unique: true },
-  	progress: Number,
-  	trend: Number
+  	progress: { type: Number, required: true },
+  	trend: { type: Number, required: true }
   }],
   hobbies: [{
   	name: { type: String, unique: true },
-  	progress: Number,
-  	trend: Number
+  	progress: { type: Number, required: true },
+    trend: { type: Number, required: true }
   }],
   supporters: [{
   	name: { type: String, unique: true },
-  	progress: Number,
-  	trend: Number
+  	progress: { type: Number, required: true },
+    trend: { type: Number, required: true }
   }]
 });
 

@@ -205,7 +205,7 @@ function useName(sender_psid, obj) {
 }
 
 function runDSEEvent(sender_psid, status, cs) {
-  logger.log('info', "inside runDSEEvent callback.  cs is ", cs)
+  logger.log('info', "inside runDSEEvent callback")
   const dseEventObj = new DSEEventObject(sender_psid, status)
   var response_text = dseEventObj.response.message.text
   const text_tags = response_text.match(/\/([A-Z]+)\//g)
