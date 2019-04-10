@@ -108,7 +108,7 @@ app.post('/webhook', (req, res) => {
       if (webhook_event.message) {
         handleMessage(sender_psid, webhook_event.message);        
       } else if (webhook_event.postback) {
-        handlePostback(sender_psid, webhook_event.postback);
+        handlePostback(sender_psid, webhook_event.postback.payload);
       }
     });
     // Return a '200 OK' response to all events
@@ -169,7 +169,7 @@ function handleMessage(sender_psid, received_message) {
     logger.log('info', 'at handleMessage function')
     if(received_message.quick_reply) {
       logger.log('info','postback came through as message', received_message.quick_reply.payload)
-      handlePostback(sender_psid, received_message.quick_reply)
+      handlePostback(sender_psid, received_message.quick_reply.payload)
     } else {
       const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
       const received_text = simpleCrypto.encrypt(received_message.text)
@@ -179,9 +179,8 @@ function handleMessage(sender_psid, received_message) {
   }
 }
 
-function handlePostback(sender_psid, received_postback) {
+function handlePostback(sender_psid, payload) {
   // Get the payload for the postback
-  let payload = received_postback.payload;
   logger.log('info', "at handlePostback payload is " + payload)
   db_model.updateStatus(sender_psid, payload, runDSEEvent, logger)
 }
