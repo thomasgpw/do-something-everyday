@@ -37,7 +37,7 @@ const
 const
   text_responses = require('./text')['text responses'],
   db_model = require('./db'),
-  fbm = require('./fbm')
+  fbm = require('./fbm'),
   app = express().use(body_parser.json()), // creates express http server
   logger = winston.createLogger({
     transports: [
