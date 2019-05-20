@@ -1,7 +1,7 @@
 const MONGODB_URI = process.env.MONGODB_URI;
 const mongoose = require('mongoose');
 var db = mongoose.connect(MONGODB_URI);
-var ChatStatus = require("./models/chatstatus");
+var ChatStatus = require("./schema/userstate");
 
 // Modified off of index2.js by Vivian Chan
 function updateStatus(sender_psid, status, callback, logger) {

@@ -23,25 +23,28 @@
 
 'use strict';
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
-const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
 
-// Imports dependencies and set up http server
+// Dependency Imports
 const 
   request = require('request'),
   express = require('express'),
   path = require('path'),
   body_parser = require('body-parser'),
   SimpleCrypto = require('simple-crypto-js').default,
-  winston = require('winston'),
+  winston = require('winston');
+
+// Module Imports
+const
   text_responses = require('./text')['text responses'],
-  db_model = require('./model'),
+  db_model = require('./db'),
+  fbm = require('./fbm')
   app = express().use(body_parser.json()), // creates express http server
   logger = winston.createLogger({
     transports: [
         new winston.transports.Console()
     ]
   });
-  logger.log('info', 'logger initiated')
+logger.log('info', 'logger initiated')
 
 class DSEEventObject {
   constructor(sender_psid, trigger) {
@@ -78,7 +81,7 @@ const toCamel = (s) => {
       .replace('_', '');
   });
 };
-
+// set up http server
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => logger.log('info','webhook is listening'));
 
@@ -89,67 +92,14 @@ app.listen(process.env.PORT || 1337, () => logger.log('info','webhook is listeni
 
 // Accepts POST requests at /webhook endpoint
 app.post('/webhook', (req, res) => {  
-
-  // Parse the request body from the POST
-  let body = req.body;
-  // Check the webhook event is from a Page subscription
-  if (body.object === 'page') {
-    body.entry.forEach(function(entry) {
-
-      // Gets the body of the webhook event
-      let webhook_event = entry.messaging[0];
-      logger.log('info', ' post to webhook event object:',{ 'webhook_event': webhook_event});
-
-      // Get the sender PSID
-      let sender_psid = webhook_event.sender.id;
-
-      // Check if the event is a message or postback and
-      // pass the event to the appropriate handler function
-      if (webhook_event.message) {
-        handleMessage(sender_psid, webhook_event.message);        
-      } else if (webhook_event.postback) {
-        handlePostback(sender_psid, webhook_event.postback.payload);
-      }
-    });
-    // Return a '200 OK' response to all events
-    res.status(200).send('EVENT_RECEIVED');
-
-  } else {
-    // Return a '404 Not Found' if event is not from a page subscription
-    res.sendStatus(404);
-  }
-
+  fbm.receive(req, res, logger)
 });
 
 /* APP GET ENDPOINTS */
 
 // Accepts GET requests at the /webhook endpoint
 app.get('/webhook', (req, res) => {
-  logger.log({'level': 'info', 'message': 'app.get at /webhook request object', 'req':req})
-
-  /** UPDATE YOUR VERIFY TOKEN **/
-  const VERIFY_TOKEN = process.env.VERIFICATION_TOKEN;
-  
-  // Parse params from the webhook verification request
-  let mode = req.query['hub.mode'];
-  let token = req.query['hub.verify_token'];
-  let challenge = req.query['hub.challenge'];
-    
-  // Check if a token and mode were sent
-  if (mode && token) {
-  
-    // Check the mode and token sent are correct
-    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-      
-      // Respond with 200 OK and challenge token from the request
-      logger.log('info','WEBHOOK_VERIFIED');
-      res.status(200).send(challenge);
-    
-    } else {
-      // Responds with '403 Forbidden' if verify tokens do not match
-      res.sendStatus(403);      
-    }
-  }
+  fbm.verify(req, res, logger)
 });
 
 // Accepts GET requests at the / and /privacypolicy endpoint

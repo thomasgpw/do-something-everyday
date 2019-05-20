@@ -1,13 +1,12 @@
-
 const
   expect = require('chai').expect,
   sinon = require('sinon'),
   sinonTest = require('sinon-test'),
   test = sinonTest(sinon),
-  assert = require('assert')
+  assert = require('assert'),
   src_path = '../..',
-  db_model = require(src_path + '/model');
-var ChatStatus = require(src_path + '/models/chatstatus');
+  db_model = require('./crudcontroller'),
+  ChatStatus = require('./schema/userstate');
  
 describe.skip('chatstatus', function() {
     it('should be invalid if name is empty', function(done) {
