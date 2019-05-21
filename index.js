@@ -35,7 +35,7 @@ const
   text_responses = require('./text')['text responses'],
   db_keeper = require('./db'),
   fbm_postal_worker = require('./fbm'),
-  state_manager = require('./sm')
+  state_manager = require('./sm'),
   app = express().use(body_parser.json()), // creates express http server
   logger = winston.createLogger({
     transports: [
