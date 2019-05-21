@@ -1,2 +1,3 @@
-const controller = require('./controller')
-module.exports = controller.exports
+'use strict';
+const postalworker = require('./postalworker')
+module.exports = postalworker.exports

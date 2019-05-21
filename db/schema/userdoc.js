@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-var ChatStatusSchema = new Schema({
+var UserDocSchema = new Schema({
   user_id: { type: String, unique: true },
   name: { type: String, required: true },
   status: String,
@@ -22,4 +22,4 @@ var ChatStatusSchema = new Schema({
   }]
 });
 
-module.exports = mongoose.model("ChatStatus", ChatStatusSchema);
+module.exports = mongoose.model("UserDoc", UserDocSchema);

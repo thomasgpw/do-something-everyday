@@ -1,6 +1,6 @@
 'use strict';
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
-
+const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 
 function receive(req, res, logger) {
   // Parse the request body from the POST
@@ -62,9 +62,8 @@ function verify(req, res, logger) {
   }
 }
 
-function callSendAPI(sender_psid, dseEventObj) {
-  const response = dseEventObj.response
-  logger.log('info', 'in callSendAPI response object message is ' + response.message.text)
+function callSendAPI(sender_psid, response, callback, logger) {
+  logger.log('info', 'in callSendAPI response object message is  ' + response.message.text)
 
   // Construct the message recipient
   response.recipient = {  'id': sender_psid  }
@@ -80,19 +79,11 @@ function callSendAPI(sender_psid, dseEventObj) {
       if(!body.error) {
         logger.log('info','message sent!')
         logger.log({'level': 'debug', 'message':'whats in this res object?','res': res})
-        if(dseEventObj.next_trigger) {
-          const next_trigger = dseEventObj.next_trigger
-          logger.log('info', 'in callback of request in callSendAPI next_trigger is ' + next_trigger)
-          if (next_trigger.includes('-')) {
-            // applies if we are now expecting to wait to receive input as a user typed message
-            db_model.updateStatus(sender_psid, next_trigger, fizzle, logger)
-          } else {
-            // applies if chaining multiple messages without waiting
-            handlePostback(sender_psid, next_trigger)
-          }
+        if(callback){
+          callback(err, res, body, logger)
         }
       } else {
-        logger.error('info', 'Unable to send message:', { 'err': body.error});
+        logger.error('info', 'Unable to send message:', { 'body.e1⁄⁄rr': body.error});
       }
     } else {
       logger.error('info', 'Unable to send message:',  {'err': err});
