@@ -1,3 +1,3 @@
 'use strict';
-const postalworker = require('./postalworker')
-module.exports = postalworker.exports
+const postal_worker = require('./postalworker')
+module.exports = postal_worker.exports

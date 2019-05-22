@@ -37,7 +37,6 @@ function handlePostback(sender_psid, payload) {
   db_model.updateStatus(sender_psid, payload, runDSEEvent, logger)
 }
 
-
 function next_call(next_trigger){
   logger.log('info', 'in callback of request in callSendAPI next_trigger is ' + next_trigger)
   if (next_trigger.includes('-')) {
@@ -47,4 +46,10 @@ function next_call(next_trigger){
     // applies if chaining multiple messages without waiting
     handlePostback(sender_psid, next_trigger)
   }
+}
+
+module.exports = {
+  'handleMessage': handleMessage,
+  'handlePostback': handlePostback,
+  'DSEEventObject': DSEEventObject
 }

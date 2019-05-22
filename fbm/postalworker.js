@@ -1,11 +1,10 @@
 'use strict';
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+const SimpleCrypto = require('simple-crypto-js').default;
 
-function receive(req, res, logger) {
-  // Parse the request body from the POST
+function receive(req, res, handleMessage, handlePostback, logger) {
   let body = req.body;
-  // Check the webhook event is from a Page subscription
   if (body.object === 'page') {
     body.entry.forEach(function(entry) {
 
@@ -19,9 +18,18 @@ function receive(req, res, logger) {
       // Check if the event is a message or postback and
       // pass the event to the appropriate handler function
       if (webhook_event.message) {
-        handleMessage(sender_psid, webhook_event.message);        
+      	const received_message = webhook_event.message
+      	if (!received_message.is_echo) {
+		      if (!received_message.quick_reply) {
+		    		const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
+			      const encrypted_text = simpleCrypto.encrypt(received_message.text)
+		        handleMessage(sender_psid, encrypted_text, logger);
+		      } else {
+		      	handlePostback(sender_psid, received_message.quick_reply.payload, logger)
+		      }
+	      }
       } else if (webhook_event.postback) {
-        handlePostback(sender_psid, webhook_event.postback.payload);
+        handlePostback(sender_psid, webhook_event.postback.payload, logger);
       }
     });
     // Return a '200 OK' response to all events
@@ -89,4 +97,10 @@ function callSendAPI(sender_psid, response, callback, logger) {
       logger.error('info', 'Unable to send message:',  {'err': err});
     }
   });
+}
+
+module.exports = {
+	'receive': receive,
+	'verify': verify,
+	'callSendAPI': callSendAPI
 }
