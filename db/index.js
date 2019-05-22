@@ -1,3 +1,3 @@
 'use strict';
 const db_keeper = require('./dbkeeper')
-module.exports = db_keeper.exports
+module.exports = db_keeper
