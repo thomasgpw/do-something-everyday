@@ -43,6 +43,7 @@ const
     ]
   });
 logger.log('info', 'logger initiated')
+app.use(bodyParser.urlencoded({ extended: false })); 
 app.listen(process.env.PORT || 1337, () => logger.log('info','Express server is listening'));
 
 
@@ -76,7 +77,7 @@ app.route('/dev(/login)?')
     res.sendFile(path.join(__dirname, 'login.html'))
   })
   .post((req, res) => {
-    console.log(req)
+    logger.log(req.body)
     res.status(200).send('EVENT_RECEIVED');
   })
 
