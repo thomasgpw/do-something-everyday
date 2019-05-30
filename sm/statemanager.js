@@ -27,7 +27,11 @@ function getEventJSON(sender_psid, trigger, logger) {
   }
 }
 function callbackStub (sender_psid, status, cs, logger) {
-
+  logger.log('info', {
+    sender_psid: sender_psid,
+    status: status,
+    cs: cs
+  })
 }
 
 function handleMessage(sender_psid, received_message, callback, logger) {

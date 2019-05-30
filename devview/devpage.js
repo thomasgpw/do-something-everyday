@@ -1,9 +1,16 @@
 function callback (sender_psid, obj, logger) {
-
+	logger.log('info', {
+		sender_psid: sender_psid,
+		obj: obj
+	})
 }
 
 function callback_with_message (sender_psid, obj, received_message, logger) {
-
+	logger.log('info', {
+		sender_psid: sender_psid,
+		obj: obj,
+		received_message: received_message
+	})
 }
 
 function render (req, res, db_keeper, logger) {
