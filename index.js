@@ -36,7 +36,7 @@ const
   db_keeper = require('./db'),
   fbm_postal_worker = require('./fbm'),
   state_manager = require('./sm'),
-  dev_page = require('./devpage'),
+  dev_view = require('./devview'),
   app = express().use(body_parser.json()), // creates express http server
   logger = winston.createLogger({
     transports: [
@@ -75,11 +75,11 @@ app.route('/webhook')
   });
 app.route('/dev(/login)?')
   .get((req, res) => {
-    res.sendFile(path.join(__dirname, 'login.html'))
+    res.sendFile(path.join(__dirname, 'devview/login.html'))
   })
   .post((req, res) => {
     if (req.body.password === process.env.DEV_PASSWORD) {
-      dev_page.render(req.body.psid)
+      dev_view.render(req.body.psid)
     } else {
       logger.log('error', 'dev password does not match recorded password')
       res.sendStatus(403);      
