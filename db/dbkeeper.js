@@ -68,6 +68,17 @@ function addSupport(sender_psid, supporter, status, callback, logger) {
   }
 }
 
+function getAll(sender_psid, callback, logger) {
+  if (sender_psid != process.env.APP_PSID) {
+    logger.log('info', 'getStatus function')
+    const query = {user_id: sender_psid};
+    UserDoc.findOne(query).exec((err, userDoc) => {
+      logger.log('info', 'UserDoc.findOne.exec get all attributes from db:');
+      callback(sender_psid, userDoc, logger);
+    })
+  }
+}
+
 function getStatus(sender_psid, callback, received_message, logger) {
   if (sender_psid != process.env.APP_PSID) {
     logger.log('info', 'getStatus function')
