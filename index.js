@@ -114,7 +114,7 @@ function useName(sender_psid, obj) {
   return real_name
 }
 
-function runDSEEvent(sender_psid, status, cs) {
+function runDSEEvent(sender_psid, status, userDoc) {
   logger.log('info', 'inside runDSEEvent callback')
   const dseEventObj = new state_manager.DSEEventObject(sender_psid, status, logger)
   var response_text = dseEventObj.response.message.text
