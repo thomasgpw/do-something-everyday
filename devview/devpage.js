@@ -1,14 +1,14 @@
-function callback (sender_psid, obj, logger) {
+function callback (sender_psid, userDoc, logger) {
 	logger.log('info', {
 		sender_psid: sender_psid,
-		obj: obj
+		userDoc: userDoc
 	})
 }
 
-function callback_with_message (sender_psid, obj, received_message, logger) {
+function callback_with_message (sender_psid, userDoc, received_message, logger) {
 	logger.log('info', {
 		sender_psid: sender_psid,
-		obj: obj,
+		userDoc: userDoc,
 		received_message: received_message
 	})
 }
