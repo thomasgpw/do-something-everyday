@@ -138,6 +138,7 @@ module.exports = {
 	'addGoal': addGoal,
 	'addHobby': addHobby,
 	'addSupport': addSupport,
+  'getAll': getAll,
 	'getStatus': getStatus,
 	'getName': getName,
   'byTag': byTag
