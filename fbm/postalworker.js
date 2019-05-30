@@ -23,13 +23,13 @@ function receive(req, res, handleMessage, handlePostback, logger) {
 		      if (!received_message.quick_reply) {
 		    		const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
 			      const encrypted_text = simpleCrypto.encrypt(received_message.text)
-		        handleMessage(sender_psid, encrypted_text, logger);
+		        handleMessage(sender_psid, encrypted_text, 'stub', logger);
 		      } else {
-		      	handlePostback(sender_psid, received_message.quick_reply.payload, logger)
+		      	handlePostback(sender_psid, received_message.quick_reply.payload, 'stub', logger)
 		      }
 	      }
       } else if (webhook_event.postback) {
-        handlePostback(sender_psid, webhook_event.postback.payload, logger);
+        handlePostback(sender_psid, webhook_event.postback.payload, 'stub', logger);
       }
     });
     // Return a '200 OK' response to all events
