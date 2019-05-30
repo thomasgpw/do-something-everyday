@@ -79,10 +79,10 @@ app.route('/dev(/login)?')
   })
   .post((req, res) => {
     if (req.body.password === process.env.DEV_PASSWORD) {
-      dev_view.render(req, res, logger)
+      dev_view.render(req, res, db_keeper, logger)
     } else {
       logger.log('error', 'dev password does not match recorded password')
-      res.sendStatus(403);      
+      res.sendStatus(403);
     }
   })
 
