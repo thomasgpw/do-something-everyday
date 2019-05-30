@@ -27,21 +27,21 @@ function getEventJSON(sender_psid, trigger, logger) {
   }
 }
 
-function handleMessage(sender_psid, received_message, logger) {
+function handleMessage(sender_psid, received_message, callback, logger) {
   logger.log('info', 'handleMessage encoded received_text string is ' + received_text)
-  db_model.getStatus(sender_psid, useStatus, received_text, logger)
+  callback(sender_psid, useStatus, received_text, logger)
 }
 
-function handlePostback(sender_psid, payload, logger) {
+function handlePostback(sender_psid, payload, callback, logger) {
   logger.log('info', 'at handlePostback payload is ' + payload)
-  db_model.updateStatus(sender_psid, payload, runDSEEvent, logger)
+  callback(sender_psid, payload, runDSEEvent, logger)
 }
 
-function next_call(next_trigger, logger){
+function next_call(next_trigger, callback, logger){
   logger.log('info', 'in callback of request in callSendAPI next_trigger is ' + next_trigger)
   if (next_trigger.includes('-')) {
     // applies if we are now expecting to wait to receive input as a user typed message
-    db_model.updateStatus(sender_psid, next_trigger, fizzle, logger)
+    callback(sender_psid, next_trigger, logger)
   } else {
     // applies if chaining multiple messages without waiting
     handlePostback(sender_psid, next_trigger, logger)

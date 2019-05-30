@@ -58,11 +58,6 @@ const toCamel = (s) => {
 
 /** SITE ROUTING **/
 
-// Accepts GET requests at the / endpoint
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.js'))
-})
-
 // Accepts GET requests at the /privacypolicy endpoint
 app.get('/privacypolicy', (req, res) => {
   res.sendFile(path.join(__dirname, 'privacypolicy.html'))
@@ -76,8 +71,13 @@ app.route('/webhook')
   .get((req, res) => {
     fbm_postal_worker.verify(req, res, logger)
   });
-
-
+app.route('/dev(/login)?')
+  .get((req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'))
+  })
+  .post((req, res) => {
+    console.log(req.body)
+  })
 
 /**  CONTROLLER LOGIC **/
 
