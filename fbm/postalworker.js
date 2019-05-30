@@ -3,7 +3,7 @@ const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const SimpleCrypto = require('simple-crypto-js').default;
 
-function receive(req, res, handleMessage, handlePostback, logger) {
+function receive(req, res, updateStatus, handleMessage, handlePostback, logger) {
   let body = req.body;
   if (body.object === 'page') {
     body.entry.forEach(function(entry) {
@@ -26,11 +26,11 @@ function receive(req, res, handleMessage, handlePostback, logger) {
             logger.log('info', encrypted_text)
 		        handleMessage(sender_psid, encrypted_text, 'stub', logger);
 		      } else {
-		      	handlePostback(sender_psid, received_message.quick_reply.payload, 'stub', logger)
+		      	handlePostback(sender_psid, received_message.quick_reply.payload, updateStatus, logger)
 		      }
 	      }
       } else if (webhook_event.postback) {
-        handlePostback(sender_psid, webhook_event.postback.payload, 'stub', logger);
+        handlePostback(sender_psid, webhook_event.postback.payload, updateStatus, logger);
       }
     });
     // Return a '200 OK' response to all events

@@ -32,9 +32,9 @@ function handleMessage(sender_psid, received_message, callback, logger) {
   // callback(sender_psid, useStatus, received_message, logger)
 }
 
-function handlePostback(sender_psid, payload, callback, logger) {
+function handlePostback(sender_psid, payload, updateStatus, logger) {
   logger.log('info', 'at handlePostback payload is ' + payload)
-  // callback(sender_psid, payload, runDSEEvent, logger)
+  updateStatus(sender_psid, payload, logger)
 }
 
 function next_call(next_trigger, callback, logger){

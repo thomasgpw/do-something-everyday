@@ -15,7 +15,7 @@ function updateStatus(sender_psid, status, callback, logger) {
 
     UserDoc.findOneAndUpdate(query, update, options).exec((err, cs) => {
       logger.log('info', 'UserDoc.findOneAndUpdate.exec update status to db:');
-      callback(sender_psid, status, cs)
+      callback(sender_psid, status, cs, logger)
     })
   }
 }
@@ -27,7 +27,7 @@ function updateName(sender_psid, preferred_name, status, callback, logger) {
     const update = {status: status, name: preferred_name};
     UserDoc.findOneAndUpdate(query, update).exec((err, cs) => {
       logger.log('info', 'UserDoc.findOneAndUpdate.exec update name to db:');
-      callback(sender_psid, status, cs)
+      callback(sender_psid, status, cs, logger)
     })
   }
 }
@@ -39,7 +39,7 @@ function addGoal(sender_psid, goal, status, callback, logger) {
     const update = {status: status, $addToSet : {goals: {name: goal, progress: 0, trend: 0}}};
     UserDoc.findOneAndUpdate(query, update).exec((err, cs) => {
       logger.log('info', 'UserDoc.findOneAndUpdate.exec add goal to db:');
-      callback(sender_psid, status, cs)
+      callback(sender_psid, status, cs, logger)
     })
   }
 }
@@ -51,7 +51,7 @@ function addHobby(sender_psid, hobby, status, callback, logger) {
     const update = {status: status, $addToSet : {hobbies: {name: hobby, progress: 0, trend: 0}}};
     UserDoc.findOneAndUpdate(query, update).exec((err, cs) => {
       logger.log('info', 'UserDoc.findOneAndUpdate.exec add hobby to db:');
-      callback(sender_psid, status, cs)
+      callback(sender_psid, status, cs, logger)
     })
   }
 }
@@ -63,7 +63,7 @@ function addSupport(sender_psid, supporter, status, callback, logger) {
     const update = {status: status, $addToSet : {supporters: {name: supporter, progress: 0, trend: 0}}};
     UserDoc.findOneAndUpdate(query, update).exec((err, cs) => {
       logger.log('info', 'UserDoc.findOneAndUpdate.exec add supporter to db:');
-      callback(sender_psid, status, cs)
+      callback(sender_psid, status, cs, logger)
     })
   }
 }
@@ -74,7 +74,7 @@ function getStatus(sender_psid, callback, received_message, logger) {
     const query = {user_id: sender_psid};
     UserDoc.findOne(query, {status: 1}).exec((err, obj) => {
       logger.log('info', 'UserDoc.findOne.exec get status from db:');
-      callback(sender_psid, obj, received_message);
+      callback(sender_psid, obj, received_message, logger);
     })
   }
 }
@@ -85,7 +85,7 @@ function getName(sender_psid, callback, logger) {
     const query = {user_id: sender_psid};
     UserDoc.findOne(query, {name: 1}).exec((err, obj) => {
       logger.log('info', 'UserDoc.findOne.exec get name from db:');
-      callback(sender_psid, obj);
+      callback(sender_psid, obj, logger);
     })
   }
 }
@@ -105,7 +105,7 @@ function getGoal(sender_psid, callback, options, logger) {
     }
     UserDoc.findOne(query, select).exec((err, obj) => {
       logger.log('info', 'UserDoc.findOne.exec get goal from db:');
-      callback(sender_psid, obj);
+      callback(sender_psid, obj, logger);
     })
   }
 }

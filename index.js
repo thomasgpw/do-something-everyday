@@ -68,7 +68,7 @@ app.get('/privacypolicy', (req, res) => {
 // Accepts both POST and GET at /webhook
 app.route('/webhook')
   .post((req, res) => {  
-    fbm_postal_worker.receive(req, res, state_manager.handleMessage, state_manager.handlePostback, logger)
+    fbm_postal_worker.receive(req, res, db_keeper.updateStatus, state_manager.handleMessage, state_manager.handlePostback, logger)
   })
   .get((req, res) => {
     fbm_postal_worker.verify(req, res, logger)

@@ -1,8 +1,8 @@
-function callback (sender_psid, obj) {
+function callback (sender_psid, obj, logger) {
 
 }
 
-function callback_with_message (sender_psid, obj, received_message) {
+function callback_with_message (sender_psid, obj, received_message, logger) {
 
 }
 
