@@ -77,7 +77,7 @@ app.route('/dev(/login)?')
     res.sendFile(path.join(__dirname, 'login.html'))
   })
   .post((req, res) => {
-    logger.log(req.body)
+    logger.log('info', req.body)
     res.status(200).send('EVENT_RECEIVED');
   })
 
