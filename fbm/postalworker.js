@@ -23,6 +23,7 @@ function receive(req, res, handleMessage, handlePostback, logger) {
 		      if (!received_message.quick_reply) {
 		    		const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
 			      const encrypted_text = simpleCrypto.encrypt(received_message.text)
+            logger.log('info', encrypted_text)
 		        handleMessage(sender_psid, encrypted_text, 'stub', logger);
 		      } else {
 		      	handlePostback(sender_psid, received_message.quick_reply.payload, 'stub', logger)
