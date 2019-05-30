@@ -27,9 +27,9 @@ function getEventJSON(sender_psid, trigger, logger) {
   }
 }
 
-function handleMessage(sender_psid, received_text, callback, logger) {
-  logger.log('info', 'handleMessage encoded received_text string is ' + received_text)
-  // callback(sender_psid, useStatus, received_text, logger)
+function handleMessage(sender_psid, received_message, callback, logger) {
+  logger.log('info', 'handleMessage encoded received_message string is ' + received_message)
+  // callback(sender_psid, useStatus, received_message, logger)
 }
 
 function handlePostback(sender_psid, payload, callback, logger) {

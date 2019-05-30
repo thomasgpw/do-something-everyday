@@ -96,14 +96,14 @@ function requestMongoData(sender_psid, dseEventObj, text_tags, callback) {
   })
 }
 
-function useStatus(sender_psid, obj, received_text) {
+function useStatus(sender_psid, obj, received_message) {
   const status = obj.status
   if (status.includes('-')) {
     let [first_trigger, next_trigger] = status.split('-')
-    logger.log('info','in useStatus', { 'first_trigger': toCamel(first_trigger), 'next_trigger': next_trigger, 'received_text': received_text})
-    db_keeper[toCamel(first_trigger)](sender_psid, received_text, next_trigger, runDSEEvent, logger)
+    logger.log('info','in useStatus', { 'first_trigger': toCamel(first_trigger), 'next_trigger': next_trigger, 'received_message': received_message})
+    db_keeper[toCamel(first_trigger)](sender_psid, received_message, next_trigger, runDSEEvent, logger)
   } else {
-    logger.log('info', 'received unexpected input message', {'status': status, 'received_text': received_text})
+    logger.log('info', 'received unexpected input message', {'status': status, 'received_message': received_message})
   }
 }
 
