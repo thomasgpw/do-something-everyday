@@ -43,7 +43,7 @@ const
     ]
   });
 logger.log('info', 'logger initiated')
-app.use(bodyParser.urlencoded({ extended: false })); 
+app.use(body_parser.urlencoded({ extended: false })); 
 app.listen(process.env.PORT || 1337, () => logger.log('info','Express server is listening'));
 
 
