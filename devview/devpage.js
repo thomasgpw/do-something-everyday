@@ -18,7 +18,7 @@ function render (req, res, db_keeper, logger) {
 	logger.log('info', 'devpage render function', {sender_psid:sender_psid})
 	let html_body = '<div>'
 	html_body += '<p>PSID:</p><p>' + sender_psid + '</p>'
-	html_body += '<p>Status:</p><p>' + db_keeper.getAll(sender_psid, callback_with_message, logger) + '</p>'
+	html_body += '<p>Status:</p><p>' + db_keeper.getAll(sender_psid, callback, logger) + '</p>'
 	// html_body += '<p>Name:</p><p>' + db_keeper.getName(sender_psid, callback, logger) + '</p>'
 	res.send(html_body + '</div>')
 }
