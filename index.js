@@ -103,7 +103,7 @@ function useStatus(sender_psid, obj, received_text) {
     logger.log('info','in useStatus', { 'first_trigger': toCamel(first_trigger), 'next_trigger': next_trigger, 'received_text': received_text})
     db_keeper[toCamel(first_trigger)](sender_psid, received_text, next_trigger, runDSEEvent, logger)
   } else {
-    logger.log('info', 'recieved unexpected input message', {'status': status, 'received_text': received_text})
+    logger.log('info', 'received unexpected input message', {'status': status, 'received_text': received_text})
   }
 }
 
