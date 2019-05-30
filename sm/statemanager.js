@@ -26,6 +26,9 @@ function getEventJSON(sender_psid, trigger, logger) {
     }
   }
 }
+function callbackStub (sender_psid, status, cs, logger) {
+
+}
 
 function handleMessage(sender_psid, received_message, callback, logger) {
   logger.log('info', 'handleMessage encoded received_message string is ' + received_message)
@@ -34,7 +37,7 @@ function handleMessage(sender_psid, received_message, callback, logger) {
 
 function handlePostback(sender_psid, payload, updateStatus, logger) {
   logger.log('info', 'at handlePostback payload is ' + payload)
-  updateStatus(sender_psid, payload, logger)
+  updateStatus(sender_psid, payload, callbackStub, logger)
 }
 
 function next_call(next_trigger, callback, logger){
