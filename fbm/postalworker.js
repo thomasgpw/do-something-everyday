@@ -3,7 +3,7 @@ const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const SimpleCrypto = require('simple-crypto-js').default;
 
-function receive(req, res, updateStatus, handleMessage, handlePostback, logger) {
+function receive(req, res, updateStatus, processNewMessage, processNewPostback, logger) {
   let body = req.body;
   if (body.object === 'page') {
     body.entry.forEach(function(entry) {
@@ -16,7 +16,7 @@ function receive(req, res, updateStatus, handleMessage, handlePostback, logger) 
       let sender_psid = webhook_event.sender.id;
 
       // Check if the event is a message or postback and
-      // pass the event to the appropriate handler function
+      // pass the event to the appropriate processNew function
       if (webhook_event.message) {
       	const received_message = webhook_event.message
       	if (!received_message.is_echo) {
@@ -24,13 +24,13 @@ function receive(req, res, updateStatus, handleMessage, handlePostback, logger) 
 		    		const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
 			      const encrypted_text = simpleCrypto.encrypt(received_message.text)
             logger.log('info', encrypted_text)
-		        handleMessage(sender_psid, encrypted_text, 'stub', logger);
+		        processNewMessage(sender_psid, encrypted_text, 'stub', logger);
 		      } else {
-		      	handlePostback(sender_psid, received_message.quick_reply.payload, updateStatus, logger)
+		      	processNewPostback(sender_psid, received_message.quick_reply.payload, updateStatus, logger)
 		      }
 	      }
       } else if (webhook_event.postback) {
-        handlePostback(sender_psid, webhook_event.postback.payload, updateStatus, logger);
+        processNewPostback(sender_psid, webhook_event.postback.payload, updateStatus, logger);
       }
     });
     // Return a '200 OK' response to all events

@@ -34,13 +34,13 @@ function callbackStub (sender_psid, status, userDoc, logger) {
   })
 }
 
-function handleMessage(sender_psid, received_message, callback, logger) {
-  logger.log('info', 'handleMessage encoded received_message string is ' + received_message)
+function processNewMessage(sender_psid, received_message, callback, logger) {
+  logger.log('info', 'processNewMessage encoded received_message string is ' + received_message)
   // callback(sender_psid, useStatus, received_message, logger)
 }
 
-function handlePostback(sender_psid, payload, updateStatus, logger) {
-  logger.log('info', 'at handlePostback payload is ' + payload)
+function processNewPostback(sender_psid, payload, updateStatus, logger) {
+  logger.log('info', 'at processNewPostback payload is ' + payload)
   updateStatus(sender_psid, payload, callbackStub, logger)
 }
 
@@ -51,12 +51,12 @@ function next_call(next_trigger, callback, logger){
     callback(sender_psid, next_trigger, logger)
   } else {
     // applies if chaining multiple messages without waiting
-    handlePostback(sender_psid, next_trigger, logger)
+    processNewPostback(sender_psid, next_trigger, logger)
   }
 }
 
 module.exports = {
-  'handleMessage': handleMessage,
-  'handlePostback': handlePostback,
+  'processNewMessage': processNewMessage,
+  'processNewPostback': processNewPostback,
   'DSEEventObject': DSEEventObject
 }
