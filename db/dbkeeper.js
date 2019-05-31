@@ -68,6 +68,7 @@ function addSupport(sender_psid, supporter, status, callback, logger) {
   }
 }
 
+// For devpage only
 function getAll(sender_psid, res, callback, logger) {
   if (sender_psid != process.env.APP_PSID) {
     logger.log('info', 'getAll function')

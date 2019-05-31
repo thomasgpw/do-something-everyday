@@ -18,7 +18,7 @@
  */
 
 
- /*** GLOBAL CONSTANTS & REQUIREMENTS ***/
+ /** GLOBAL CONSTANTS & REQUIREMENTS **/
 
 'use strict';
 
@@ -37,13 +37,16 @@ const
   fbm_postal_worker = require('./fbm'),
   state_manager = require('./sm'),
   dev_view = require('./devview'),
-  app = express().use(body_parser.json()), // creates express http server
+  app = express(),
   logger = winston.createLogger({
     transports: [
         new winston.transports.Console()
     ]
   });
+
+// express http server config
 logger.log('info', 'logger initiated')
+app.use(body_parser.json())
 app.use(body_parser.urlencoded({ extended: false })); 
 app.listen(process.env.PORT || 1337, () => logger.log('info','Express server is listening'));
 
@@ -73,6 +76,8 @@ app.route('/webhook')
   .get((req, res) => {
     fbm_postal_worker.verify(req, res, logger)
   });
+
+// Accepts both POST and GET at /dev or /dev/login
 app.route('/dev(/login)?')
   .get((req, res) => {
     res.sendFile(path.join(__dirname, 'devview/login.html'))
@@ -85,6 +90,7 @@ app.route('/dev(/login)?')
       res.sendStatus(403);
     }
   })
+
 
 /**  CONTROLLER LOGIC **/
 
