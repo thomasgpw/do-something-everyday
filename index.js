@@ -51,16 +51,6 @@ app.use(body_parser.urlencoded({ extended: false }));
 app.listen(process.env.PORT || 1337, () => logger.log('info','Express server is listening'));
 
 
-// from https://matthiashager.com/converting-snake-case-to-camel-case-object-keys-with-javascript
-const toCamel = (s) => {
-  return s.toLowerCase().replace(/([-_][a-z])/ig, ($1) => {
-    return $1.toUpperCase()
-      .replace('-', '')
-      .replace('_', '');
-  });
-};
-
-
 /** SITE ROUTING **/
 
 // Accepts GET requests at the /privacypolicy endpoint
@@ -71,7 +61,7 @@ app.get('/privacypolicy', (req, res) => {
 // Accepts both POST and GET at /webhook
 app.route('/webhook')
   .post((req, res) => {  
-    fbm_postal_worker.receive(req, res, db_keeper.updateStatus, state_manager.processReceivedMessage, state_manager.processReceivedPostback, logger)
+    fbm_postal_worker.receive(req, res, db_keeper.updateStatus, state_manager.processReceivedMessageText, state_manager.processReceivedPostback, logger)
   })
   .get((req, res) => {
     fbm_postal_worker.verify(req, res, logger)
@@ -100,17 +90,6 @@ function requestMongoData(sender_psid, dseEventObj, text_tags, callback) {
   text_tags.forEach((tag, i) => {
     tag_replacements[i] = useName(sender_psid, db_keeper.byTag(sender_psid, tag, logger))
   })
-}
-
-function useStatus(sender_psid, obj, received_message) {
-  const status = obj.status
-  if (status.includes('-')) {
-    let [first_trigger, next_trigger] = status.split('-')
-    logger.log('info','in useStatus', { 'first_trigger': toCamel(first_trigger), 'next_trigger': next_trigger, 'received_message': received_message})
-    db_keeper[toCamel(first_trigger)](sender_psid, received_message, next_trigger, runDSEEvent, logger)
-  } else {
-    logger.log('info', 'received unexpected input message', {'status': status, 'received_message': received_message})
-  }
 }
 
 function useName(sender_psid, obj) {

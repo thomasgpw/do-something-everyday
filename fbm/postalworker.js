@@ -1,9 +1,8 @@
 'use strict';
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
-const SimpleCrypto = require('simple-crypto-js').default;
 
-function receive(req, res, updateStatus, processReceivedMessage, processReceivedPostback, logger) {
+function receive(req, res, updateStatus, processReceivedMessageText, processReceivedPostback, logger) {
   let body = req.body;
   if (body.object === 'page') {
     body.entry.forEach(function(entry) {
@@ -21,10 +20,7 @@ function receive(req, res, updateStatus, processReceivedMessage, processReceived
       	const received_message = webhook_event.message
       	if (!received_message.is_echo) {
 		      if (!received_message.quick_reply) {
-		    		const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
-			      const encrypted_text = simpleCrypto.encrypt(received_message.text)
-            logger.log('info', encrypted_text)
-		        processReceivedMessage(sender_psid, encrypted_text, 'stub', logger);
+		    		processReceivedMessageText(sender_psid, received_message.text, 'stub', logger);
 		      } else {
 		      	processReceivedPostback(sender_psid, received_message.quick_reply.payload, updateStatus, logger)
 		      }

@@ -15,7 +15,11 @@ function updateStatus(sender_psid, status, callback, logger) {
 
     UserDoc.findOneAndUpdate(query, update, options).exec((err, userDoc) => {
       logger.log('info', 'UserDoc.findOneAndUpdate.exec update status to db:');
-      callback(sender_psid, status, userDoc, logger)
+      if (status === userDoc.status) {
+        callback(sender_psid, status, logger)
+      } else {
+        logger.log('error', 'status did not correctly set in db', {'should be':status, 'is':userDoc.status})
+      }
     })
   }
 }
