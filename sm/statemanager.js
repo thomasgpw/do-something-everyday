@@ -26,28 +26,24 @@ function statusResponse(sender_psid, status, logger) {
 function processReceivedMessageText(sender_psid, received_message_text, callback, logger) {
   logger.log('info', 'processReceivedMessageText received_message_text string is ' + received_message_text)
   const text_lower = received_message_text.toLowerCase()
-  if (text_lower === 'help' || text_lower === 'delete') { // change this to a regex match \b[(help)|(delete)]\b
-    processEscapeCommand(sender_psid, text_lower, logger)
+  const escapeCommand = text_lower.match(\b(help|delete)\b)
+  if (escapeCommand) {
+    if (escapeCommand.includes('help')) {
+      sendHelp(sender_psid, logger)
+    } else if (escapeCommand[0] === 'delete') {
+      processEscapeCommand(sender_psid, text_lower, logger)
+    }
   } else {
     const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
     const encrypted_text = simpleCrypto.encrypt(received_message_text.text)
     logger.log('info', {'encrypted_text': encrypted_text});
-    // callback(sender_psid, useStatus, received_message_text, logger)
+    callback(sender_psid, received_message_text, logger)
   }
 }
 
 function processReceivedPostback(sender_psid, payload, updateStatus, logger) {
   logger.log('info', 'at processReceivedPostback payload is ' + payload)
   updateStatus(sender_psid, payload, statusResponse, logger)
-}
-
-function processEscapeCommand (sender_psid, command, logger) {
-  logger.log('info', 'in statemanager.processEscapeCommand', {'command': command})
-  if (command === 'help') {
-    sendHelp(sender_psid, logger)
-  } else if (command === 'delete') {
-    confirmDelete(sender_psid, command, logger)
-  }
 }
 
 function sendHelp(sender_psid, logger) {}

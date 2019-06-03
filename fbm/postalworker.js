@@ -2,7 +2,9 @@
 const FACEBOOK_GRAPH_API_BASE_URL = 'https://graph.facebook.com/v2.6/';
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 
-function receive(req, res, updateStatus, processReceivedMessageText, processReceivedPostback, logger) {
+function receive(req, res,
+  processReceivedMessageText, processReceivedPostback,
+  updateStatus, logger) {
   let body = req.body;
   if (body.object === 'page') {
     body.entry.forEach(function(entry) {

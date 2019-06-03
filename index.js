@@ -61,7 +61,9 @@ app.get('/privacypolicy', (req, res) => {
 // Accepts both POST and GET at /webhook
 app.route('/webhook')
   .post((req, res) => {  
-    fbm_postal_worker.receive(req, res, db_keeper.updateStatus, state_manager.processReceivedMessageText, state_manager.processReceivedPostback, logger)
+    fbm_postal_worker.receive(req, res,
+      state_manager.processReceivedMessageText, state_manager.processReceivedPostback,
+      db_keeper.updateStatus, logger)
   })
   .get((req, res) => {
     fbm_postal_worker.verify(req, res, logger)
@@ -84,29 +86,29 @@ app.route('/dev(/login)?')
 
 /**  CONTROLLER LOGIC **/
 
-function requestMongoData(sender_psid, dseEventObj, text_tags, callback) {
-  logger.log('info', 'at requestMongoData function with response ' + dseEventObj.response.message.text, {'text_tags': text_tags})  
-  var tag_replacements = text_tags.slice(0)
-  text_tags.forEach((tag, i) => {
-    tag_replacements[i] = useName(sender_psid, db_keeper.byTag(sender_psid, tag, logger))
-  })
-}
+// function requestMongoData(sender_psid, dseEventObj, text_tags, callback) {
+//   logger.log('info', 'at requestMongoData function with response ' + dseEventObj.response.message.text, {'text_tags': text_tags})  
+//   var tag_replacements = text_tags.slice(0)
+//   text_tags.forEach((tag, i) => {
+//     tag_replacements[i] = useName(sender_psid, db_keeper.byTag(sender_psid, tag, logger))
+//   })
+// }
 
-function useName(sender_psid, obj) {
-  const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
-  const real_name = simpleCrypto.decrypt(obj.name)
-  logger.log('info', 'in useName name is ' + real_name)
-  return real_name
-}
+// function useName(sender_psid, obj) {
+//   const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
+//   const real_name = simpleCrypto.decrypt(obj.name)
+//   logger.log('info', 'in useName name is ' + real_name)
+//   return real_name
+// }
 
-function runDSEEvent(sender_psid, status, userDoc) {
-  logger.log('info', 'inside runDSEEvent callback')
-  const dseEventObj = new state_manager.DSEEventObject(sender_psid, status, logger)
-  var response_text = dseEventObj.response.message.text
-  const text_tags = response_text.match(/\/([A-Z]+)\//g)
-  if (text_tags) {
-    requestMongoData(sender_psid, dseEventObj, text_tags, fbm_postal_worker.callSendAPI)
-  } else {
-    fbm_postal_worker.callSendAPI(sender_psid, dseEventObj.response, dseEventObj.next_trigger, logger)
-  }
-}
+// function runDSEEvent(sender_psid, status, userDoc) {
+//   logger.log('info', 'inside runDSEEvent callback')
+//   const dseEventObj = new state_manager.DSEEventObject(sender_psid, status, logger)
+//   var response_text = dseEventObj.response.message.text
+//   const text_tags = response_text.match(/\/([A-Z]+)\//g)
+//   if (text_tags) {
+//     requestMongoData(sender_psid, dseEventObj, text_tags, fbm_postal_worker.callSendAPI)
+//   } else {
+//     fbm_postal_worker.callSendAPI(sender_psid, dseEventObj.response, dseEventObj.next_trigger, logger)
+//   }
+// }
