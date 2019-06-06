@@ -26,6 +26,7 @@ function render (sender_psid, res, userDoc, logger) {
 	html_body += '<p>Name:</p><p>' + userDoc.name + '</p>'
 	res.send(html_body + '</div>')
 }
+
 module.exports = {
 	'getUserDoc': getUserDoc
 }

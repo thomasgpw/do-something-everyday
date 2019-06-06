@@ -1,17 +1,32 @@
-const
-  MONGODB_URI = process.env.MONGODB_URI,
-  mongoose = require('mongoose'),
-  UserDoc = require("./schema/userdoc");
+/**
+ * @fileoverview The controller module for communicating
+ *     between the StateManager module and the Mongo Database.
+ * @module DBKeeper
+ */
+
+const MONGODB_URI = process.env.MONGODB_URI;
+const mongoose = require('mongoose');
+const UserDoc = require('./schema/userdoc');
 
 mongoose.connect(MONGODB_URI);
 
+/**
+ * Sets a user's UserDoc status, if the user is new, it creates a new UserDoc.
+ * 
+ * @param {string} sender_psid - the unique string that Facebook asociates and
+ *     provides with individual users who communicate with DSE
+ * @param {string} status - the status to set as UserDoc's status
+ * @param {Function} callback - the function called after successfully
+ *     updating the UserDoc status
+ * @param {Winston} logger - the Winston logger
+ */
 function updateStatus(sender_psid, status, callback, logger) {
   if (sender_psid != process.env.APP_PSID) {
     logger.log('info', 'updateStatus function')
     const query = {user_id: sender_psid};
     const update = {status: status};
     // true if status is INIT_0, this makes a new document for the sender 
-    const options = {upsert: status === "INIT_0"};
+    const options = {upsert: status === 'INIT_0'};
 
     UserDoc.findOneAndUpdate(query, update, options).exec((err, userDoc) => {
       logger.log('info', 'UserDoc.findOneAndUpdate.exec update status to db:');

@@ -1,7 +1,12 @@
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
+/**
+ * @fileoverview The schema definition for the only database model, UserDocs.
+ * @module UserDoc
+ */
 
-var UserDocSchema = new Schema({
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+const UserDocSchema = new Schema({
   user_id: { type: String, unique: true },
   name: { type: String, required: true },
   status: String,
@@ -22,4 +27,4 @@ var UserDocSchema = new Schema({
   }]
 });
 
-module.exports = mongoose.model("UserDoc", UserDocSchema);
+module.exports = mongoose.model('UserDoc', UserDocSchema);

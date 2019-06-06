@@ -1,7 +1,18 @@
+/**
+ * @fileoverview StateManager is the main controller module for handling and
+ *     communicating between other specialized controller modules
+ * @module StateManager
+ */
+
 'use strict';
 const SimpleCrypto = require('simple-crypto-js').default;
 
-// from https://matthiashager.com/converting-snake-case-to-camel-case-object-keys-with-javascript
+/**
+ * from https://matthiashager.com/converting-snake-case-to-camel-case-object-keys-with-javascript
+ * 
+ * @param {string} s - a_string_in_snake_case
+ * @return {string} aStringInCamelCase
+ */
 const toCamel = (s) => {
   return s.toLowerCase().replace(/([-_][a-z])/ig, ($1) => {
     return $1.toUpperCase()
@@ -23,6 +34,16 @@ function statusResponse(sender_psid, status, logger) {
   }
 }
 
+/**
+ * Receives text from messages sent via POST to the /webhook endpoint and
+ *     calls the next relevant function
+ * 
+ * @param {string} sender_psid - the unique string that Facebook asociates and
+ *     provides with individual users who communicate with DSE.
+ * @param {string} received_message_text - the text of the message that was in
+ *     the body of the request that was received.
+ * @param {Winston} logger - the Winston logger
+ */
 function processReceivedMessageText(sender_psid, received_message_text, callback, logger) {
   logger.log('info', 'processReceivedMessageText received_message_text string is ' + received_message_text)
   const text_lower = received_message_text.toLowerCase()
@@ -41,12 +62,45 @@ function processReceivedMessageText(sender_psid, received_message_text, callback
   }
 }
 
+/**
+ * Receives postback from messages sent via POST to the /webhook endpoint and
+ *     calls the next relevant function.
+ * 
+ * @param {string} sender_psid - the unique string that Facebook asociates and
+ *     provides with individual users who communicate with DSE
+ * @param {string} payload - the paylopad status trigger that was in the body
+ *     of the request that was received
+ * @param {Function({string} sender_psid, {string} command, {Winston} logger)}
+ *     payload - the paylopad status trigger that was in the body of the
+ *     request that was received
+ * @param {Winston} logger - the Winston logger
+ */
 function processReceivedPostback(sender_psid, payload, updateStatus, logger) {
   logger.log('info', 'at processReceivedPostback payload is ' + payload)
   updateStatus(sender_psid, payload, statusResponse, logger)
 }
 
+/**
+ * Sends a formatted string to callSendAPI which informs the user of DSE's
+ *     escape commands and legal information.
+ *
+ * @param {string} sender_psid - the unique string that Facebook asociates and
+ *     provides with individual users who communicate with DSE
+ * @param {Winston} logger - the Winston logger
+ */
 function sendHelp(sender_psid, logger) {}
+
+/**
+ * Parses the command string for a target doc or field to delete from the db
+ *     and asks for conformation if valid, sends help string if the command
+ *     is invalid
+ *
+ * @param {string} sender_psid - the unique string that Facebook asociates and
+ *     provides with individual users who communicate with DSE
+ * @param {string} command - the string taken from received message text
+ *     converted to lowercase
+ * @param {Winston} logger - the Winston logger
+ */
 function confirmDelete(sender_psid, command, logger) {}
 
 

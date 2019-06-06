@@ -23,22 +23,20 @@
 'use strict';
 
 // Dependency Imports
-const 
-  request = require('request'),
-  express = require('express'),
-  path = require('path'),
-  body_parser = require('body-parser'),
-  winston = require('winston');
+const request = require('request')
+const express = require('express')
+const path = require('path')
+const body_parser = require('body-parser')
+const winston = require('winston');
 
 // Module Imports
-const
-  text_responses = require('./text')['text responses'],
-  db_keeper = require('./db'),
-  fbm_postal_worker = require('./fbm'),
-  state_manager = require('./sm'),
-  dev_view = require('./devview'),
-  app = express(),
-  logger = winston.createLogger({
+const text_responses = require('./text')['text responses']
+const db_keeper = require('./db')
+const fbm_postal_worker = require('./fbm')
+const state_manager = require('./sm')
+const dev_view = require('./devview')
+const app = express()
+const logger = winston.createLogger({
     transports: [
         new winston.transports.Console()
     ]
