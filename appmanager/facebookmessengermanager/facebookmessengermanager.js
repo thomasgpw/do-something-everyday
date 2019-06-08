@@ -1,7 +1,7 @@
 /**
- * @fileoverview PostalWorker is the controller module for communicating
- *     between the StateManager module and the Facebook Messenger API.
- * @module PostalWorker
+ * @fileoverview FacebookMessengerManager is the controller module for communicating
+ *     between the AppManager module and the Facebook Messenger API.
+ * @module FacebookMessengerManager
  */
 
 'use strict';
@@ -24,17 +24,17 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
  */
 function receive(req, res,
     processReceivedMessageText, processReceivedPostback,
-    updateStatus, logger) {  //updateStatus should be removed from this call stack and known by StateManager
-  let body = req.body;
+    logger) {
+  const body = req.body;
   if (body.object === 'page') {
     body.entry.forEach(function(entry) {
 
       // Gets the body of the webhook event
-      let webhook_event = entry.messaging[0];
+      const webhook_event = entry.messaging[0];
       logger.log('info', ' post to webhook event object:',{ 'webhook_event': webhook_event});
 
       // Get the sender PSID
-      let sender_psid = webhook_event.sender.id;
+      const sender_psid = webhook_event.sender.id;
 
       // Check if the event is a message or postback and
       // pass the event to the appropriate processReceived function
@@ -42,13 +42,13 @@ function receive(req, res,
       	const received_message = webhook_event.message
       	if (!received_message.is_echo) {
 		      if (!received_message.quick_reply) {
-		    		processReceivedMessageText(sender_psid, received_message.text, 'stub', logger);
+		    		processReceivedMessageText(sender_psid, received_message.text, logger);
 		      } else {
-		      	processReceivedPostback(sender_psid, received_message.quick_reply.payload, updateStatus, logger)
+		      	processReceivedPostback(sender_psid, received_message.quick_reply.payload, logger)
 		      }
 	      }
       } else if (webhook_event.postback) {
-        processReceivedPostback(sender_psid, webhook_event.postback.payload, updateStatus, logger);
+        processReceivedPostback(sender_psid, webhook_event.postback.payload, logger);
       }
     });
     // Return a '200 OK' response to all events

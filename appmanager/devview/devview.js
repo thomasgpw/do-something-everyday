@@ -1,17 +1,4 @@
-function callback (sender_psid, userDoc, logger) {
-	logger.log('info', {
-		sender_psid: sender_psid,
-		userDoc: userDoc
-	})
-}
 
-function callback_with_message (sender_psid, userDoc, received_message, logger) {
-	logger.log('info', {
-		sender_psid: sender_psid,
-		userDoc: userDoc,
-		received_message: received_message
-	})
-}
 function getUserDoc (req, res, getAll, logger) {
 	const sender_psid = req.body.psid
 	logger.log('info', 'devpage getUserDoc function', {sender_psid:sender_psid})

@@ -1,7 +1,7 @@
 /**
  * @fileoverview The controller module for communicating
- *     between the StateManager module and the Mongo Database.
- * @module DBKeeper
+ *     between the AppManager module and the Mongo Database.
+ * @module DatabaseManager
  */
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -14,7 +14,7 @@ mongoose.connect(MONGODB_URI);
  * Sets a user's UserDoc status, if the user is new, it creates a new UserDoc.
  * 
  * @param {string} sender_psid - the unique string that Facebook asociates and
- *     provides with individual users who communicate with DSE
+ *     provides with individual users who communicate with DSE 
  * @param {string} status - the status to set as UserDoc's status
  * @param {Function} callback - the function called after successfully
  *     updating the UserDoc status
@@ -126,13 +126,13 @@ function getGoal(sender_psid, callback, options, logger) {
     logger.log('info', 'getGoal function')
     const query = {user_id: sender_psid};
     if (options) {
-    	if (options.name) {
-		  const select = {goals: {$elemMatch: {'name': options.name}}}
-    	} else {
-    	  logger.log('error', 'in getGoal the only supported option is .name', options)
-    	}
+      if (options.name) {
+      const select = {goals: {$elemMatch: {'name': options.name}}}
+      } else {
+        logger.log('error', 'in getGoal the only supported option is .name', options)
+      }
     } else {
-    	const select = {goals: {$sample: {size: 1}}}
+      const select = {goals: {$sample: {size: 1}}}
     }
     UserDoc.findOne(query, select).exec((err, userDoc) => {
       logger.log('info', 'UserDoc.findOne.exec get goal from db:');
@@ -153,13 +153,13 @@ function byTag(sender_psid, tag, logger) {
 }
 
 module.exports = {
-	'updateStatus': updateStatus,
-	'updateName': updateName,
-	'addGoal': addGoal,
-	'addHobby': addHobby,
-	'addSupport': addSupport,
+  'updateStatus': updateStatus,
+  'updateName': updateName,
+  'addGoal': addGoal,
+  'addHobby': addHobby,
+  'addSupport': addSupport,
   'getAll': getAll,
-	'getStatus': getStatus,
-	'getName': getName,
+  'getStatus': getStatus,
+  'getName': getName,
   'byTag': byTag
 }
