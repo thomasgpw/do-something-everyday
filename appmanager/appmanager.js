@@ -25,16 +25,16 @@ const logger = winston.createLogger({
         new winston.transports.Console()
     ]
   });
-logger.log('info', 'logger initiated');
+logger.info('logger initiated');
 
 function setUpApp(root_dir) {
-  logger.log('info', 'setting up app')
+  logger.info('AppManager.setUpApp')
   const app = express()
 
   // express http server config
   app.use(body_parser.json())
   app.use(body_parser.urlencoded({ extended: false })); 
-  app.listen(process.env.PORT || 1337, () => logger.log('info','Express server is listening'));
+  app.listen(process.env.PORT || 1337, () => logger.info('Express server is listening'));
 
 
   /** SITE ROUTING **/
@@ -64,7 +64,7 @@ function setUpApp(root_dir) {
       if (req.body.password === process.env.DEV_PASSWORD) {
         DevView.getUserDoc(req, res, DatabaseManager.getAll, logger)
       } else {
-        logger.log('error', 'dev password does not match recorded password')
+        logger.error('dev password does not match recorded password')
         res.sendStatus(403);
       }
     })
@@ -86,14 +86,14 @@ const toCamel = (s) => {
 
 
 function statusResponse(sender_psid, status, logger) {
-  logger.log('info', 'in statemanager.statusResponse', {
+  logger.info('AppManager.statusResponse', {
     sender_psid: sender_psid,
     status: status
   })
   if (status.includes('-')) {
-    logger.log('debug', 'the status requests user input before another event in text.json')
+    logger.debug('the status requests user input before another event in text.json')
   } else {
-    logger.log('debug', 'the status is the trigger for an event in text.json')
+    logger.debug('the status is the trigger for an event in text.json')
   }
 }
 
@@ -108,7 +108,7 @@ function statusResponse(sender_psid, status, logger) {
  * @param {Winston} logger - the Winston logger
  */
 function processReceivedMessageText(sender_psid, received_message_text, logger) {
-  logger.log('info', 'processReceivedMessageText received_message_text string is ' + received_message_text)
+  logger.info('AppManager.processReceivedMessageText', {'received_message_text': received_message_text})
   const text_lower = received_message_text.toLowerCase()
   const escapeCommand = text_lower.match(/\b(help|delete)\b/)
   if (escapeCommand) {
@@ -120,7 +120,7 @@ function processReceivedMessageText(sender_psid, received_message_text, logger) 
   } else {
     const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
     const encrypted_text = simpleCrypto.encrypt(received_message_text.text)
-    logger.log('info', {'encrypted_text': encrypted_text});
+    logger.debug({'encrypted_text': encrypted_text});
     // callback(sender_psid, received_message_text, logger)
   }
 }
@@ -139,7 +139,7 @@ function processReceivedMessageText(sender_psid, received_message_text, logger) 
  * @param {Winston} logger - the Winston logger
  */
 function processReceivedPostback(sender_psid, payload, logger) {
-  logger.log('info', 'at processReceivedPostback payload is ' + payload)
+  logger.info('AppManager.processReceivedPostback' {'payload': payload})
   DatabaseManager.updateStatus(sender_psid, payload, statusResponse, logger)
 }
 
@@ -172,7 +172,7 @@ function confirmDelete(sender_psid, command, logger) {}
 /** OLD CONTROLLER LOGIC **/
 
 // function requestMongoData(sender_psid, dseEventObj, text_tags, callback) {
-//   logger.log('info', 'at requestMongoData function with response ' + dseEventObj.response.message.text, {'text_tags': text_tags})  
+//   logger.info('at requestMongoData function with response ' + dseEventObj.response.message.text, {'text_tags': text_tags})  
 //   var tag_replacements = text_tags.slice(0)
 //   text_tags.forEach((tag, i) => {
 //     tag_replacements[i] = useName(sender_psid, DatabaseManager.byTag(sender_psid, tag, logger))
@@ -182,12 +182,12 @@ function confirmDelete(sender_psid, command, logger) {}
 // function useName(sender_psid, obj) {
 //   const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
 //   const real_name = simpleCrypto.decrypt(obj.name)
-//   logger.log('info', 'in useName name is ' + real_name)
+//   logger.info('in useName name is ' + real_name)
 //   return real_name
 // }
 
 // function runDSEEvent(sender_psid, status, userDoc) {
-//   logger.log('info', 'inside runDSEEvent callback')
+//   logger.info('inside runDSEEvent callback')
 //   const dseEventObj = new DSEEventObject(sender_psid, status, logger)
 //   var response_text = dseEventObj.response.message.text
 //   const text_tags = response_text.match(/\/([A-Z]+)\//g)
@@ -199,7 +199,7 @@ function confirmDelete(sender_psid, command, logger) {}
 // }
 // class DSEEventObject {
 //   constructor(sender_psid, trigger, logger) {
-//     logger.log('info', 'at DSEEventObject constructor from trigger ' + trigger)
+//     logger.info('at DSEEventObject constructor from trigger ' + trigger)
 //     this._sender_psid = sender_psid
 //     this._jsonObj = getEventJSON(sender_psid, trigger)
 //   }
@@ -214,16 +214,16 @@ function confirmDelete(sender_psid, command, logger) {}
 //   }
 // }
 // function getEventJSON(sender_psid, trigger, logger) {
-//   logger.log('info', 'at getEventJSON function from trigger ' + trigger)
+//   logger.info('at getEventJSON function from trigger ' + trigger)
 //   for(var i = 0; i < text_responses.length; i++) {
 //     if (trigger == text_responses[i].trigger) {
-//       logger.log('info', 'response text should be set equal to ' + text_responses[i].response.message.text)
+//       logger.info('response text should be set equal to ' + text_responses[i].response.message.text)
 //       return text_responses[i]
 //     }
 //   }
 // }
 // function next_call(next_trigger, callback, logger){
-//   logger.log('info', 'in callback of request in callSendAPI next_trigger is ' + next_trigger)
+//   logger.info('in callback of request in callSendAPI next_trigger is ' + next_trigger)
 //   if (next_trigger.includes('-')) {
 //     // applies if we are now expecting to wait to receive input as a user typed message
 //     callback(sender_psid, next_trigger, logger)

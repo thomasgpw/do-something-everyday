@@ -25,13 +25,14 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 function receive(req, res,
     processReceivedMessageText, processReceivedPostback,
     logger) {
+  logger.info('FacebookMessengerManager.receive')
   const body = req.body;
   if (body.object === 'page') {
     body.entry.forEach(function(entry) {
 
       // Gets the body of the webhook event
       const webhook_event = entry.messaging[0];
-      logger.log('info', ' post to webhook event object:',{ 'webhook_event': webhook_event});
+      logger.info('post to webhook event object:',{ 'webhook_event': webhook_event});
 
       // Get the sender PSID
       const sender_psid = webhook_event.sender.id;
@@ -72,7 +73,7 @@ function receive(req, res,
  * @param {Winston} logger - the Winston logger
  */
 function verify(req, res, logger) {
-  logger.log({'level': 'info', 'message': 'app.get at /webhook request object', 'req':req})
+  logger.info('FacebookMessengerManager.verify',{'req':req})
 
   /** UPDATE YOUR VERIFY TOKEN **/
   const VERIFY_TOKEN = process.env.VERIFICATION_TOKEN;
@@ -89,7 +90,7 @@ function verify(req, res, logger) {
     if (mode === 'subscribe' && token === VERIFY_TOKEN) {
       
       // Respond with 200 OK and challenge token from the request
-      logger.log('info','WEBHOOK_VERIFIED');
+      logger.info('WEBHOOK_VERIFIED');
       res.status(200).send(challenge);
     
     } else {
@@ -111,7 +112,7 @@ function verify(req, res, logger) {
  * @param {Winston} logger - the Winston logger
  */
 function callSendAPI(sender_psid, res, callback, logger) {
-  logger.log('info', 'in callSendAPI response object message is  ' + res.message.text)
+  logger.info('FacebookMessengerManager.callSendAPI', {'response': res.message.text})
 
   // Construct the message recipient
   res.recipient = {  'id': sender_psid  }
@@ -125,16 +126,16 @@ function callSendAPI(sender_psid, res, callback, logger) {
   }, (err, res, body) => {
     if (!err) {
       if(!body.error) {
-        logger.log('info','message sent!')
-        logger.log({'level': 'debug', 'message':'whats in this res object?','res': res})
+        logger.info('message sent!')
+        logger.debug({'message':'whats in this res object?','res': res})
         if(callback){
           callback(err, res, body, logger)
         }
       } else {
-        logger.error('info', 'Unable to send message:', { 'body.error': body.error});
+        logger.error('Unable to send message:', { 'body.error': body.error});
       }
     } else {
-      logger.error('info', 'Unable to send message:',  {'err': err});
+      logger.error('Unable to send message:',  {'err': err});
     }
   });
 }
