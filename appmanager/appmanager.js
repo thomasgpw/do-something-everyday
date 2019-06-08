@@ -139,7 +139,7 @@ function processReceivedMessageText(sender_psid, received_message_text, logger) 
  * @param {Winston} logger - the Winston logger
  */
 function processReceivedPostback(sender_psid, payload, logger) {
-  logger.info('AppManager.processReceivedPostback' {'payload': payload})
+  logger.info('AppManager.processReceivedPostback', {'payload': payload})
   DatabaseManager.updateStatus(sender_psid, payload, statusResponse, logger)
 }
 
