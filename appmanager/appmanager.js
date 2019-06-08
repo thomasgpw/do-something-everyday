@@ -27,7 +27,7 @@ const logger = winston.createLogger({
   });
 logger.log('info', 'logger initiated');
 
-function setUpApp() {
+function setUpApp(root_dir) {
   logger.log('info', 'setting up app')
   const app = express()
 
@@ -41,7 +41,7 @@ function setUpApp() {
 
   // Accepts GET requests at the /privacypolicy endpoint
   app.get('/privacypolicy', (req, res) => {
-    res.sendFile(path.join(__dirname, 'privacypolicy.html'))
+    res.sendFile(path.join(root_dir, 'privacypolicy.html'))
   })
 
   // Accepts both POST and GET at /webhook
@@ -58,7 +58,7 @@ function setUpApp() {
   // Accepts both POST and GET at /dev or /dev/login
   app.route('/dev(/login)?')
     .get((req, res) => {
-      res.sendFile(path.join(__dirname, 'appmanager/devview/login.html'))
+      res.sendFile(path.join(root_dir, 'appmanager/devview/login.html'))
     })
     .post((req, res) => {
       if (req.body.password === process.env.DEV_PASSWORD) {

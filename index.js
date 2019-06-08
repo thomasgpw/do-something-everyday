@@ -23,4 +23,4 @@
 'use strict';
 
 const AppManager = require('./appmanager')
-const app = AppManager.setUpApp()
+const app = AppManager.setUpApp(__dirname)
