@@ -12,26 +12,26 @@ mongoose.connect(MONGODB_URI);
 
 /**
  * Sets a user's UserDoc status, if the user is new, it creates a new UserDoc.
- * 
+ *
+ * @param {Winston} logger - the Winston logger
  * @param {string} sender_psid - the unique string that Facebook asociates and
- *     provides with individual users who communicate with DSE 
+ *     provides with individual users who communicate with DSE
  * @param {string} status - the status to set as UserDoc's status
  * @param {Function} callback - the function called after successfully
  *     updating the UserDoc status
- * @param {Winston} logger - the Winston logger
  */
-function updateStatus(sender_psid, status, callback, logger) {
+function updateStatus(logger, sender_psid, status, callback) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.updateStatus')
     const query = {user_id: sender_psid};
     const update = {status: status};
-    // true if status is INIT_0, this makes a new document for the sender 
+    // true if status is INIT_0, this makes a new document for the sender
     const options = {upsert: status === 'INIT_0'};
 
     UserDoc.findOneAndUpdate(query, update, options).exec((err, userDoc) => {
       logger.info('DatabaseManager.updateStatus.UserDoc.findOneAndUpdate.exec');
       if (status === userDoc.status) {
-        callback(sender_psid, status, logger)
+        callback(logger, sender_psid, status)
       } else {
         logger.error('status did not correctly set in db', {'should be':status, 'is':userDoc.status})
       }
@@ -39,89 +39,149 @@ function updateStatus(sender_psid, status, callback, logger) {
   }
 }
 
-function updateName(sender_psid, preferred_name, status, callback, logger) {
+/**
+ * Sets a user's UserDoc name.
+ *
+ * @param {Winston} logger - the Winston logger
+ * @param {string} sender_psid - the unique string that Facebook asociates and
+ *     provides with individual users who communicate with DSE
+ * @param {string} preffered_name - the name to set as UserDoc's name
+ * @param {string} status - the status to set as UserDoc's status
+ * @param {Function} callback - the function called after successfully
+ *     updating the UserDoc status
+ */
+function updateName(logger, sender_psid, preferred_name, status, callback) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.updateName')
     const query = {user_id: sender_psid};
     const update = {status: status, name: preferred_name};
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.updateName.UserDoc.findOneAndUpdate.exec');
-      callback(sender_psid, status, userDoc, logger)
+      if (name === userDoc.name) {
+        callback(logger, sender_psid, status)
+      } else {
+        logger.error('name did not correctly set in db', {'should be':name, 'is':userDoc.name})
+      }
     })
   }
 }
 
-function addGoal(sender_psid, goal, status, callback, logger) {
+/**
+ * Adds a goal to a user's UserDoc goals.
+ *
+ * @param {Winston} logger - the Winston logger
+ * @param {string} sender_psid - the unique string that Facebook asociates and
+ *     provides with individual users who communicate with DSE
+ * @param {string} goal - the goal to add to UserDoc's list of goals
+ * @param {string} status - the status to set as UserDoc's status
+ * @param {Function} callback - the function called after successfully
+ *     updating the UserDoc status
+ */
+function addGoal(logger, sender_psid, goal, status, callback) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.addGoal')
     const query = {user_id: sender_psid};
     const update = {status: status, $addToSet : {goals: {name: goal, progress: 0, trend: 0}}};
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.addGoal.UserDoc.findOneAndUpdate.exec');
-      callback(sender_psid, status, userDoc, logger)
+      if (userDoc.goals.includes(goal)) {
+        callback(logger, sender_psid, status)
+      } else {
+        logger.error('goal did not correctly set in db', {'should have':goal, 'has':userDoc.goals})
+      }
     })
   }
 }
 
-function addHobby(sender_psid, hobby, status, callback, logger) {
+/**
+ * Adds a hobby to a user's UserDoc hobbies.
+ *
+ * @param {Winston} logger - the Winston logger
+ * @param {string} sender_psid - the unique string that Facebook asociates and
+ *     provides with individual users who communicate with DSE
+ * @param {string} hobby - the hobby to add to UserDoc's list of hobbies
+ * @param {string} status - the status to set as UserDoc's status
+ * @param {Function} callback - the function called after successfully
+ *     updating the UserDoc status
+ */
+function addHobby(logger, sender_psid, hobby, status, callback) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.addHobby')
     const query = {user_id: sender_psid};
     const update = {status: status, $addToSet : {hobbies: {name: hobby, progress: 0, trend: 0}}};
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.addHobby.UserDoc.findOneAndUpdate.exec');
-      callback(sender_psid, status, userDoc, logger)
+      if (userDoc.hobbies.includes(hobby)) {
+        callback(logger, sender_psid, status)
+      } else {
+        logger.error('hobby did not correctly set in db', {'should have':hobby, 'has':userDoc.hobbies})
+      }
     })
   }
 }
 
-function addSupport(sender_psid, supporter, status, callback, logger) {
+/**
+ * Adds a supporter to a user's UserDoc supporters.
+ *
+ * @param {Winston} logger - the Winston logger
+ * @param {string} sender_psid - the unique string that Facebook asociates and
+ *     provides with individual users who communicate with DSE
+ * @param {string} supporter - the supporter to add to UserDoc's list of supporters
+ * @param {string} status - the status to set as UserDoc's status
+ * @param {Function} callback - the function called after successfully
+ *     updating the UserDoc status
+ */
+function addSupport(logger, sender_psid, supporter, status, callback) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.addSupport')
     const query = {user_id: sender_psid};
     const update = {status: status, $addToSet : {supporters: {name: supporter, progress: 0, trend: 0}}};
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.addSupport.UserDoc.findOneAndUpdate.exec');
-      callback(sender_psid, status, userDoc, logger)
+      if (userDoc.supporters.includes(supporter)) {
+        callback(logger, sender_psid, status)
+      } else {
+        logger.error('supporter did not correctly set in db', {'should have':supporter, 'has':userDoc.supporters})
+      }
     })
   }
 }
 
 // For devpage only
-function getAll(sender_psid, res, callback, logger) {
+function getAll(logger, sender_psid, res, callback) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.getAll')
     const query = {user_id: sender_psid};
     UserDoc.findOne(query).exec((err, userDoc) => {
       logger.info('UserDoc.findOne.exec get all attributes from db:');
-      callback(sender_psid, res, userDoc, logger);
+      callback(logger, sender_psid, res, userDoc);
     })
   }
 }
 
-function getStatus(sender_psid, callback, received_message, logger) {
+function getStatus(logger, sender_psid, callback, received_message_text) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.getStatus')
     const query = {user_id: sender_psid};
     UserDoc.findOne(query, {status: 1}).exec((err, userDoc) => {
       logger.info('DatabaseManager.getStatus.UserDoc.findOne.exec');
-      callback(sender_psid, userDoc, received_message, logger);
+      callback(logger, sender_psid, userDoc.status, received_message_text);
     })
   }
 }
 
-function getName(sender_psid, callback, logger) {
+function getName(logger, sender_psid, callback) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.getName')
     const query = {user_id: sender_psid};
     UserDoc.findOne(query, {name: 1}).exec((err, userDoc) => {
       logger.info('DatabaseManager.getName.UserDoc.findOne.exec');
-      callback(sender_psid, userDoc, logger);
+      callback(logger, sender_psid, userDoc);
     })
   }
 }
 
-function getGoal(sender_psid, callback, options, logger) {
+function getGoal(logger, sender_psid, callback, options) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.getGoal')
     const query = {user_id: sender_psid};
@@ -136,12 +196,12 @@ function getGoal(sender_psid, callback, options, logger) {
     }
     UserDoc.findOne(query, select).exec((err, userDoc) => {
       logger.info('DatabaseManager.getGoal.UserDoc.findOne.exec');
-      callback(sender_psid, userDoc, logger);
+      callback(logger, sender_psid, userDoc);
     })
   }
 }
 
-function byTag(sender_psid, tag, logger) {
+function byTag(logger, sender_psid, tag) {
   logger.info('DatabaseManager.byTag', {'tag': tag})
   const _TAG_REFERENCE = {
     '/NAME/': getName

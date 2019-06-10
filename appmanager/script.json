@@ -1,11 +1,20 @@
 {
-	"text responses": [
+	"script entries": [
+		{
+			"trigger": "HELP",
+			"response": {
+				"messaging_type": "RESPONSE",
+				"message": {
+					"text": "helpstring"
+				}
+			}
+		},
 		{
 			"trigger": "INIT_0",
 			"response": {
 				"messaging_type": "RESPONSE",
 				"message": {
-					"text": "Hi, I'm Do Something Everyday.  I am here to provide robotic personal reminders to help you track if you do something everyday."
+					"text": "Hi, thank you for trying out Do Something Everyday.  This bot is here to provide personal reminders to help you track if you do something everyday."
 				}
 			},
 			"next_trigger": "INIT_0.1"
