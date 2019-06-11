@@ -182,7 +182,7 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
         if (data_tags) {
           // Where a function for getting specific fields from DatabaseKeeper should be
         } else {
-          FacebookMessengerManager.callSendAPI(logger, sender_psid, script_entry, getSendAPINextStep)
+          FacebookMessengerManager.callSendAPI(logger, sender_psid, script_entry.response, script_entry.next_trigger, processReceivedPostback)
         }
       }
     }
