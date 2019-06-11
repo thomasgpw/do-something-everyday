@@ -7,7 +7,6 @@
 'use strict';
 
 // Dependency Imports
-const request = require('request')
 const express = require('express')
 const path = require('path')
 const body_parser = require('body-parser')
