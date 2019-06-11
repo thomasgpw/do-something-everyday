@@ -26,6 +26,7 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 function receive(logger, req, res,
     processReceivedMessageText, processReceivedPostback) {
   logger.info('FacebookMessengerManager.receive')
+  logger.info(req)
   const body = req.body;
   if (body.object === 'page') {
     body.entry.forEach(function(entry) {

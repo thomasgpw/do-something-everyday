@@ -96,9 +96,9 @@ function processReceivedMessageText(logger, sender_psid, received_message_text) 
     }
   } else {
     const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
-    const encrypted_text = simpleCrypto.encrypt(received_message_text.text)
+    const encrypted_text = simpleCrypto.encrypt(received_message_text)
     logger.debug({'encrypted_text': encrypted_text});
-    DatabaseManager.getStatus(logger, sender_psid, useStatus, received_message_text)
+    DatabaseManager.getStatus(logger, sender_psid, useStatus, encrypted_text)
   }
 }
 
