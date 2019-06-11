@@ -179,10 +179,10 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
         // const script_entry_response =
         logger.debug('response text should be set equal to ' + script_entry.response.message.text)
         const data_tags = script_entry.response.message.text.match(/\/([A-Z]+)\//g)
-        if (data_tags.length === 0) {
-          FacebookMessengerManager.callSendAPI(logger, sender_psid, script_entry, getSendAPINextStep)
-        } else {
+        if (data_tags) {
           // Where a function for getting specific fields from DatabaseKeeper should be
+        } else {
+          FacebookMessengerManager.callSendAPI(logger, sender_psid, script_entry, getSendAPINextStep)
         }
       }
     }
