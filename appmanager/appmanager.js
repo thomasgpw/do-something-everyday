@@ -52,9 +52,8 @@ function setUpApp(root_dir) {
   // Accepts both POST and GET at /webhook
   app.route('/webhook')
     .post((req, res) => {
-      FacebookMessengerManager.receive(req, res,
-        processReceivedMessageText, processReceivedPostback,
-        logger)
+      FacebookMessengerManager.receive(logger, req, res,
+        processReceivedMessageText, processReceivedPostback)
     })
     .get((req, res) => {
       FacebookMessengerManager.verify(logger, req, res)
@@ -119,6 +118,8 @@ function useStatus(logger, sender_psid, status, received_message_text) {
   logger.info('AppManager.useStatus')
   if (next_trigger.includes('-')) {
     const [databaseFunction, next_status] = status.split('-')
+    // if status is ADD_GOAL-CHECK_IN_3.2 then it should call
+    // DatabaseManager.addGoal(logger, sender_psid, received_message_text, 'CHECK_IN_3.2, processReceivedPostback')
     DatabaseManager[toCamel(databaseFunction)](logger, sender_psid, received_message_text, next_status, processReceivedPostback)
   } else {
     // Input wasn't expected but was received
@@ -175,7 +176,7 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
     for(let i = 0; i < SCRIPT.length; i++) {
       if (status == SCRIPT[i].trigger) {
         const script_entry = SCRIPT[i]
-        const script_entry_response =
+        // const script_entry_response =
         logger.debug('response text should be set equal to ' + script_entry.response.message.text)
         const data_tags = script_entry.response.message.text.match(/\/([A-Z]+)\//g)
         if (data_tags.length === 0) {

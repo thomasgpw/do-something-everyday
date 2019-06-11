@@ -17,10 +17,10 @@ mongoose.connect(MONGODB_URI);
  * @param {string} sender_psid - the unique string that Facebook asociates and
  *     provides with individual users who communicate with DSE
  * @param {string} status - the status to set as UserDoc's status
- * @param {Function} callback - the function called after successfully
+ * @param {Function} getPostbackScriptResponse - the function called after successfully
  *     updating the UserDoc status
  */
-function updateStatus(logger, sender_psid, status, callback) {
+function updateStatus(logger, sender_psid, status, getPostbackScriptResponse) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.updateStatus')
     const query = {user_id: sender_psid};
@@ -31,7 +31,7 @@ function updateStatus(logger, sender_psid, status, callback) {
     UserDoc.findOneAndUpdate(query, update, options).exec((err, userDoc) => {
       logger.info('DatabaseManager.updateStatus.UserDoc.findOneAndUpdate.exec');
       if (status === userDoc.status) {
-        callback(logger, sender_psid, status)
+        getPostbackScriptResponse(logger, sender_psid, status)
       } else {
         logger.error('status did not correctly set in db', {'should be':status, 'is':userDoc.status})
       }
@@ -47,10 +47,10 @@ function updateStatus(logger, sender_psid, status, callback) {
  *     provides with individual users who communicate with DSE
  * @param {string} preffered_name - the name to set as UserDoc's name
  * @param {string} status - the status to set as UserDoc's status
- * @param {Function} callback - the function called after successfully
+ * @param {Function} getPostbackScriptResponse - the function called after successfully
  *     updating the UserDoc status
  */
-function updateName(logger, sender_psid, preferred_name, status, callback) {
+function updateName(logger, sender_psid, preferred_name, status, getPostbackScriptResponse) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.updateName')
     const query = {user_id: sender_psid};
@@ -58,7 +58,7 @@ function updateName(logger, sender_psid, preferred_name, status, callback) {
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.updateName.UserDoc.findOneAndUpdate.exec');
       if (name === userDoc.name) {
-        callback(logger, sender_psid, status)
+        getPostbackScriptResponse(logger, sender_psid, status)
       } else {
         logger.error('name did not correctly set in db', {'should be':name, 'is':userDoc.name})
       }
@@ -74,10 +74,10 @@ function updateName(logger, sender_psid, preferred_name, status, callback) {
  *     provides with individual users who communicate with DSE
  * @param {string} goal - the goal to add to UserDoc's list of goals
  * @param {string} status - the status to set as UserDoc's status
- * @param {Function} callback - the function called after successfully
+ * @param {Function} getPostbackScriptResponse - the function called after successfully
  *     updating the UserDoc status
  */
-function addGoal(logger, sender_psid, goal, status, callback) {
+function addGoal(logger, sender_psid, goal, status, getPostbackScriptResponse) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.addGoal')
     const query = {user_id: sender_psid};
@@ -85,7 +85,7 @@ function addGoal(logger, sender_psid, goal, status, callback) {
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.addGoal.UserDoc.findOneAndUpdate.exec');
       if (userDoc.goals.includes(goal)) {
-        callback(logger, sender_psid, status)
+        getPostbackScriptResponse(logger, sender_psid, status)
       } else {
         logger.error('goal did not correctly set in db', {'should have':goal, 'has':userDoc.goals})
       }
@@ -101,10 +101,10 @@ function addGoal(logger, sender_psid, goal, status, callback) {
  *     provides with individual users who communicate with DSE
  * @param {string} hobby - the hobby to add to UserDoc's list of hobbies
  * @param {string} status - the status to set as UserDoc's status
- * @param {Function} callback - the function called after successfully
+ * @param {Function} getPostbackScriptResponse - the function called after successfully
  *     updating the UserDoc status
  */
-function addHobby(logger, sender_psid, hobby, status, callback) {
+function addHobby(logger, sender_psid, hobby, status, getPostbackScriptResponse) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.addHobby')
     const query = {user_id: sender_psid};
@@ -112,7 +112,7 @@ function addHobby(logger, sender_psid, hobby, status, callback) {
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.addHobby.UserDoc.findOneAndUpdate.exec');
       if (userDoc.hobbies.includes(hobby)) {
-        callback(logger, sender_psid, status)
+        getPostbackScriptResponse(logger, sender_psid, status)
       } else {
         logger.error('hobby did not correctly set in db', {'should have':hobby, 'has':userDoc.hobbies})
       }
@@ -128,10 +128,10 @@ function addHobby(logger, sender_psid, hobby, status, callback) {
  *     provides with individual users who communicate with DSE
  * @param {string} supporter - the supporter to add to UserDoc's list of supporters
  * @param {string} status - the status to set as UserDoc's status
- * @param {Function} callback - the function called after successfully
+ * @param {Function} getPostbackScriptResponse - the function called after successfully
  *     updating the UserDoc status
  */
-function addSupport(logger, sender_psid, supporter, status, callback) {
+function addSupport(logger, sender_psid, supporter, status, getPostbackScriptResponse) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.addSupport')
     const query = {user_id: sender_psid};
@@ -139,7 +139,7 @@ function addSupport(logger, sender_psid, supporter, status, callback) {
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.addSupport.UserDoc.findOneAndUpdate.exec');
       if (userDoc.supporters.includes(supporter)) {
-        callback(logger, sender_psid, status)
+        getPostbackScriptResponse(logger, sender_psid, status)
       } else {
         logger.error('supporter did not correctly set in db', {'should have':supporter, 'has':userDoc.supporters})
       }
