@@ -192,13 +192,13 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
  * Reads a script entry's next trigger to call processReceivedPostback
  *     if multiple messages should be chained.
  */
-function getSendAPINextStep(logger, err, res, body, script_entry) {
-  if (!next_trigger.includes('-')) {
-
-  } else {
-    // Applies if we are now expecting to wait to receive input as a user typed message
-  }
-}
+// function getSendAPINextStep(logger, sender_psid, statu) {
+//   if (!statu.includes('-')) {
+//     // Applies if we are now expecting to wait to receive input as a user typed message
+//   } else {
+//     processReceivedPostback(logger, sender_psid, statu)
+//   }
+// }
 
 /**
  * Sends a formatted string to callSendAPI which informs the user of DSE's
