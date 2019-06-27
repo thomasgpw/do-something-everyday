@@ -31,12 +31,10 @@ function receive(logger, req, res,
         req.body
         && req.body.entry.length === 1
         && req.body.entry[0].messaging.length === 1
-        && !req.body.entry[0].messaging[0].read
     ) {
       logger.info('FacebookMessengerManager.receive')
       // Gets the important information of the webhook event
       const webhook_event = req.body.entry[0].messaging[0];
-      logger.info('webhook event object:',{ 'webhook_event': webhook_event});
 
       // Get the sender PSID
       const sender_psid = webhook_event.sender.id;
@@ -46,6 +44,7 @@ function receive(logger, req, res,
       if (webhook_event.message) {
       	const received_message = webhook_event.message
       	if (!received_message.is_echo) {
+          logger.info('webhook event object:',{ 'webhook_event': webhook_event});
   	      if (!received_message.quick_reply) {
   	    		processReceivedMessageText(logger, sender_psid, received_message.text);
   	      } else {
@@ -53,6 +52,7 @@ function receive(logger, req, res,
   	      }
         }
       } else if (webhook_event.postback) {
+        logger.info('webhook event object:',{ 'webhook_event': webhook_event});
         processReceivedPostback(logger, sender_psid, webhook_event.postback.payload);
       }
     }
