@@ -32,7 +32,6 @@ logger.info('logger initiated');
  * @param {string} root_dir - The __dirname value from the root index.js for local file paths
  */
 function setUpApp(root_dir) {
-  logger.info('AppManager.setUpApp')
   const app = express()
 
   // express http server config

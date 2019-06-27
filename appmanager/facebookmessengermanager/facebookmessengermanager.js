@@ -44,7 +44,7 @@ function receive(logger, req, res,
       if (webhook_event.message) {
       	const received_message = webhook_event.message
       	if (!received_message.is_echo) {
-          logger.info('webhook event object:',{ 'webhook_event': webhook_event});
+          logger.info('webhook event object with message:',{ 'webhook_event': webhook_event});
   	      if (!received_message.quick_reply) {
   	    		processReceivedMessageText(logger, sender_psid, received_message.text);
   	      } else {
@@ -52,7 +52,7 @@ function receive(logger, req, res,
   	      }
         }
       } else if (webhook_event.postback) {
-        logger.info('webhook event object:',{ 'webhook_event': webhook_event});
+        logger.info('webhook event object with postback:',{ 'webhook_event': webhook_event});
         processReceivedPostback(logger, sender_psid, webhook_event.postback.payload);
       }
     }
