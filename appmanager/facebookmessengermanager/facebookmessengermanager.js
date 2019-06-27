@@ -29,8 +29,8 @@ function receive(logger, req, res,
   if (req.body.object === 'page') {
     if (
         req.body
-        && len(req.body.entry) === 1
-        && len(req.body.entry[0].messaging) === 1
+        && req.body.entry.length === 1
+        && req.body.entry[0].messaging.length === 1
         && !req.body.entry[0].messaging[0].read
     ) {
       logger.info('FacebookMessengerManager.receive')
