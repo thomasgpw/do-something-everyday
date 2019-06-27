@@ -25,15 +25,18 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
  */
 function receive(logger, req, res,
     processReceivedMessageText, processReceivedPostback) {
-  logger.info('FacebookMessengerManager.receive')
-  logger.info(req)
-  const body = req.body;
-  if (body.object === 'page') {
-    body.entry.forEach(function(entry) {
-
-      // Gets the body of the webhook event
-      const webhook_event = entry.messaging[0];
-      logger.info('post to webhook event object:',{ 'webhook_event': webhook_event});
+  // Sort the unique POST requests from the repeated and echoed POST requests
+  if (req.body.object === 'page') {
+    if (
+        req.body
+        && len(req.body.entry) === 1
+        && len(req.body.entry[0].messaging) === 1
+        && !req.body.entry[0].messaging[0].read
+    ) {
+      logger.info('FacebookMessengerManager.receive')
+      // Gets the important information of the webhook event
+      const webhook_event = req.body.entry[0].messaging[0];
+      logger.info('webhook event object:',{ 'webhook_event': webhook_event});
 
       // Get the sender PSID
       const sender_psid = webhook_event.sender.id;
@@ -43,20 +46,20 @@ function receive(logger, req, res,
       if (webhook_event.message) {
       	const received_message = webhook_event.message
       	if (!received_message.is_echo) {
-		      if (!received_message.quick_reply) {
-		    		processReceivedMessageText(logger, sender_psid, received_message.text);
-		      } else {
-		      	processReceivedPostback(logger, sender_psid, received_message.quick_reply.payload)
-		      }
-	      }
+  	      if (!received_message.quick_reply) {
+  	    		processReceivedMessageText(logger, sender_psid, received_message.text);
+  	      } else {
+  	      	processReceivedPostback(logger, sender_psid, received_message.quick_reply.payload)
+  	      }
+        }
       } else if (webhook_event.postback) {
         processReceivedPostback(logger, sender_psid, webhook_event.postback.payload);
       }
-    });
+    }
     // Return a '200 OK' response to all events
     res.status(200).send('EVENT_RECEIVED');
-
-  } else {
+  }
+  else {
     // Return a '404 Not Found' if event is not from a page subscription
     res.sendStatus(404);
   }

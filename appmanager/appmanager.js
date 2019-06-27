@@ -51,6 +51,7 @@ function setUpApp(root_dir) {
   // Accepts both POST and GET at /webhook
   app.route('/webhook')
     .post((req, res) => {
+      logger.info('/webhook received a POST request')
       FacebookMessengerManager.receive(logger, req, res,
         processReceivedMessageText, processReceivedPostback)
     })
