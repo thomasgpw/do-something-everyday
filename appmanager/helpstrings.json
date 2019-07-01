@@ -1,5 +1,5 @@
 {
-      "trigger": "HELP",
+      "status": "HELP",
       "response": {
         "messaging_type": "RESPONSE",
         "message": {

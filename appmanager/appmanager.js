@@ -109,13 +109,13 @@ function processReceivedMessageText(logger, sender_psid, received_message_text) 
  * @param {Winston} logger - the Winston logger
  * @param {string} sender_psid - the unique string that Facebook asociates and
  *     provides with individual users who communicate with DSE
- * @param {string} status - the status trigger that reads if input is expected
+ * @param {string} status - the status status that reads if input is expected
  *     and what the input is for
  * @param {string} received_message_text - the text of the received message
  */
 function useStatus(logger, sender_psid, status, received_message_text) {
   logger.info('AppManager.useStatus')
-  if (next_trigger.includes('-')) {
+  if (status.includes('-')) {
     const [databaseFunction, next_status] = status.split('-')
     // if status is ADD_GOAL-CHECK_IN_3.2 then it should call
     // DatabaseManager.addGoal(logger, sender_psid, received_message_text, 'CHECK_IN_3.2, processReceivedPostback')
@@ -133,7 +133,7 @@ function useStatus(logger, sender_psid, status, received_message_text) {
  * @param {Winston} logger - the Winston logger
  * @param {string} sender_psid - the unique string that Facebook asociates and
  *     provides with individual users who communicate with DSE
- * @param {string} payload - the paylopad status trigger that was in the body
+ * @param {string} payload - the paylopad status status that was in the body
  *     of the request that was received
  */
 function processReceivedPostback(logger, sender_psid, payload) {
@@ -173,7 +173,7 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
     logger.debug('the status requests user input before another event in script.json')
   } else {
     for(let i = 0; i < SCRIPT.length; i++) {
-      if (status == SCRIPT[i].trigger) {
+      if (status == SCRIPT[i].status) {
         const script_entry = SCRIPT[i]
         // const script_entry_response =
         logger.debug('response text should be set equal to ' + script_entry.response.message.text)
@@ -181,7 +181,7 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
         if (data_tags) {
           // Where a function for getting specific fields from DatabaseKeeper should be
         } else {
-          FacebookMessengerManager.callSendAPI(logger, sender_psid, script_entry.response, script_entry.next_trigger, processReceivedPostback)
+          FacebookMessengerManager.callSendAPI(logger, sender_psid, script_entry.response, script_entry.next_status, processReceivedPostback)
         }
       }
     }
@@ -189,7 +189,7 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
 }
 
 /**
- * Reads a script entry's next trigger to call processReceivedPostback
+ * Reads a script entry's next status to call processReceivedPostback
  *     if multiple messages should be chained.
  */
 // function getSendAPINextStep(logger, sender_psid, statu) {
@@ -250,33 +250,33 @@ function confirmDelete(logger, sender_psid, command) {}
 //   if (text_tags) {
 //     requestMongoData(sender_psid, dseEventObj, text_tags, FacebookMessengerManager.callSendAPI)
 //   } else {
-//     FacebookMessengerManager.callSendAPI(logger, sender_psid, dseEventObj.response, dseEventObj.next_trigger)
+//     FacebookMessengerManager.callSendAPI(logger, sender_psid, dseEventObj.response, dseEventObj.next_status)
 //   }
 // }
 // class DSEEventObject {
-//   constructor(logger, sender_psid, trigger) {
-//     logger.info('at DSEEventObject constructor from trigger ' + trigger)
+//   constructor(logger, sender_psid, status) {
+//     logger.info('at DSEEventObject constructor from status ' + status)
 //     this._sender_psid = sender_psid
-//     this._jsonObj = getEventJSON(sender_psid, trigger)
+//     this._jsonObj = getEventJSON(sender_psid, status)
 //   }
 //   get response() {
 //     return this._jsonObj.response
 //   }
-//   get next_trigger() {
-//     return this._jsonObj.next_trigger
+//   get next_status() {
+//     return this._jsonObj.next_status
 //   }
 //   get sender_psid() {
 //     return this._sender_psid
 //   }
 // }
-// function next_call(logger, next_trigger, callback){
-//   logger.info('in callback of request in callSendAPI next_trigger is ' + next_trigger)
-//   if (next_trigger.includes('-')) {
+// function next_call(logger, next_status, callback){
+//   logger.info('in callback of request in callSendAPI next_status is ' + next_status)
+//   if (next_status.includes('-')) {
 //     // applies if we are now expecting to wait to receive input as a user typed message
-//     callback(logger, sender_psid, next_trigger)
+//     callback(logger, sender_psid, next_status)
 //   } else {
 //     // applies if chaining multiple messages without waiting
-//     processReceivedPostback(logger, sender_psid, next_trigger)
+//     processReceivedPostback(logger, sender_psid, next_status)
 //   }
 // }
 

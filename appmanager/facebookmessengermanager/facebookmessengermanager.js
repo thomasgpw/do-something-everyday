@@ -113,13 +113,13 @@ function verify(logger, req, res) {
  *     provides with individual users who communicate with DSE.
  * @param {HttpObject} script_entry_response - the configured response object
  *     to send to the user
- * @param {string=} next_trigger - The script_entry.next_trigger included if
+ * @param {string=} next_status - The script_entry.next_status included if
  *     the script will chain multiple messages
  * @param {Function=} processReceivedPostback - the StateManager function
- *     that asks the database to update a user's status from next_trigger
+ *     that asks the database to update a user's status from next_status
  *     after the message is sent included if the script will chain multiple messages
  */
-function callSendAPI(logger, sender_psid, script_entry_response, next_trigger, processReceivedPostback) {
+function callSendAPI(logger, sender_psid, script_entry_response, next_status, processReceivedPostback) {
   logger.info('FacebookMessengerManager.callSendAPI', {'response': script_entry_response.message.text})
 
   // Construct the message recipient
@@ -136,11 +136,11 @@ function callSendAPI(logger, sender_psid, script_entry_response, next_trigger, p
       if(!body.error) {
         logger.info('message sent!')
         logger.debug({'message':'whats in this res object?','res': res})
-        if (next_trigger) {
-          logger.info('heres what next trigger is', {next_trigger: next_trigger})
-          setTimeout(() => processReceivedPostback(logger, sender_psid, next_trigger), 2000)
+        if (next_status) {
+          logger.info('heres what next status is', {next_status: next_status})
+          setTimeout(() => processReceivedPostback(logger, sender_psid, next_status), 2000)
         } else {
-          logger.info('no next_trigger')
+          logger.info('no next_status')
         }
       } else {
         logger.error('Unable to send message:', { 'body.error': body.error});
