@@ -136,8 +136,11 @@ function callSendAPI(logger, sender_psid, script_entry_response, next_trigger, p
       if(!body.error) {
         logger.info('message sent!')
         logger.debug({'message':'whats in this res object?','res': res})
-        if (!next_trigger === undefined) {
+        if (next_trigger) {
+          logger.info('heres what next trigger is', {next_trigger: next_trigger})
           setTimeout(() => processReceivedPostback(logger, sender_psid, next_trigger), 2000)
+        } else {
+          logger.info('no next_trigger')
         }
       } else {
         logger.error('Unable to send message:', { 'body.error': body.error});
