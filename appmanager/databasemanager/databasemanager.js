@@ -53,11 +53,7 @@ function updateName(logger, sender_psid, preferred_name, status, getPostbackScri
     const update = {status: status, name: preferred_name};
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.updateName.UserDoc.findOneAndUpdate.exec');
-      if (name === userDoc.name) {
-        getPostbackScriptResponse(logger, sender_psid, status)
-      } else {
-        logger.error('name did not correctly set in db', {'should be':name, 'is':userDoc.name})
-      }
+      getPostbackScriptResponse(logger, sender_psid, status)
     })
   }
 }
@@ -80,11 +76,7 @@ function addGoal(logger, sender_psid, goal, status, getPostbackScriptResponse) {
     const update = {status: status, $addToSet : {goals: {name: goal, progress: 0, trend: 0}}};
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.addGoal.UserDoc.findOneAndUpdate.exec');
-      if (userDoc.goals.includes(goal)) {
-        getPostbackScriptResponse(logger, sender_psid, status)
-      } else {
-        logger.error('goal did not correctly set in db', {'should have':goal, 'has':userDoc.goals})
-      }
+      getPostbackScriptResponse(logger, sender_psid, status)
     })
   }
 }
@@ -107,11 +99,7 @@ function addHobby(logger, sender_psid, hobby, status, getPostbackScriptResponse)
     const update = {status: status, $addToSet : {hobbies: {name: hobby, progress: 0, trend: 0}}};
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.addHobby.UserDoc.findOneAndUpdate.exec');
-      if (userDoc.hobbies.includes(hobby)) {
-        getPostbackScriptResponse(logger, sender_psid, status)
-      } else {
-        logger.error('hobby did not correctly set in db', {'should have':hobby, 'has':userDoc.hobbies})
-      }
+      getPostbackScriptResponse(logger, sender_psid, status)
     })
   }
 }
@@ -134,11 +122,7 @@ function addSupport(logger, sender_psid, supporter, status, getPostbackScriptRes
     const update = {status: status, $addToSet : {supporters: {name: supporter, progress: 0, trend: 0}}};
     UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
       logger.info('DatabaseManager.addSupport.UserDoc.findOneAndUpdate.exec');
-      if (userDoc.supporters.includes(supporter)) {
-        getPostbackScriptResponse(logger, sender_psid, status)
-      } else {
-        logger.error('supporter did not correctly set in db', {'should have':supporter, 'has':userDoc.supporters})
-      }
+      getPostbackScriptResponse(logger, sender_psid, status)
     })
   }
 }
