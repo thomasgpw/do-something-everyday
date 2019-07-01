@@ -29,17 +29,8 @@ function updateStatus(logger, sender_psid, status, getPostbackScriptResponse) {
     const options = {upsert: status === 'INIT_0'};
 
     UserDoc.findOneAndUpdate(query, update, options).exec((err, userDoc) => {
-      logger.info('DatabaseManager.updateStatus.UserDoc.findOneAndUpdate.exec', {
-        query: query,
-        update: update,
-        options: options,
-        userDoc: userDoc
-      });
-      if (status === userDoc.status) {
-        getPostbackScriptResponse(logger, sender_psid, status)
-      } else {
-        logger.error('status did not correctly set in db', {'should be':status, 'is':userDoc.status})
-      }
+      logger.info('DatabaseManager.updateStatus.UserDoc.findOneAndUpdate.exec');
+      getPostbackScriptResponse(logger, sender_psid, status)
     })
   }
 }
