@@ -122,7 +122,8 @@ function useStatus(logger, sender_psid, status, received_message_text) {
     DatabaseManager[toCamel(databaseFunction)](logger, sender_psid, received_message_text, next_status, processReceivedPostback)
   } else {
     // Input wasn't expected but was received
-    sendHelp(logger, sender_psid)
+    // sendHelp(logger, sender_psid)
+    processReceivedPostback(logger, sender_psid, status)
   }
 }
 
