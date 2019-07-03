@@ -189,6 +189,5 @@ module.exports = {
   'addSupport': addSupport,
   'getAll': getAll,
   'getStatus': getStatus,
-  'getName': getName,
-  'byTag': byTag
+  'getName': getName
 }
