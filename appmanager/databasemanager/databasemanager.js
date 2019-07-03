@@ -150,18 +150,18 @@ function getStatus(logger, sender_psid, callback, received_message_text) {
   }
 }
 
-function getName(logger, sender_psid, callback) {
+function getName(logger, sender_psid, script_entry, useMongoData) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.getName')
     const query = {user_id: sender_psid};
     UserDoc.findOne(query, {name: 1}).exec((err, userDoc) => {
       logger.info('DatabaseManager.getName.UserDoc.findOne.exec');
-      callback(logger, sender_psid, userDoc);
+      useMongoData(logger, sender_psid, script_entry, userDoc);
     })
   }
 }
 
-function getGoal(logger, sender_psid, callback) {
+function getGoal(logger, sender_psid, script_entry, useMongoData) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.getGoal')
     const query = {user_id: sender_psid};
@@ -176,7 +176,7 @@ function getGoal(logger, sender_psid, callback) {
     }
     UserDoc.findOne(query, select).exec((err, userDoc) => {
       logger.info('DatabaseManager.getGoal.UserDoc.findOne.exec');
-      callback(logger, sender_psid, userDoc);
+      useMongoData(logger, sender_psid, script_entry, userDoc);
     })
   }
 }
