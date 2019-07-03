@@ -25,26 +25,22 @@ const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
  */
 function receive(logger, req, res,
     processReceivedMessageText, processReceivedPostback) {
-  // Sort the unique POST requests from the repeated and echoed POST requests
   if (req.body.object === 'page') {
-    if (
-        req.body
-        && req.body.entry.length === 1
-        && req.body.entry[0].messaging.length === 1
-    ) {
-      logger.info('FacebookMessengerManager.receive')
-      // Gets the important information of the webhook event
-      const webhook_event = req.body.entry[0].messaging[0];
+    logger.info('FacebookMessengerManager.receive')
+    // Gets the important information of the webhook event
+    const webhook_event = req.body.entry[0].messaging[0];
 
-      // Get the sender PSID
-      const sender_psid = webhook_event.sender.id;
+    // Get the sender PSID
+    const sender_psid = webhook_event.sender.id;
 
+    if (sender_psid != process.env.APP_PSID) {
       // Check if the event is a message or postback and
       // pass the event to the appropriate processReceived function
       if (webhook_event.message) {
+        logger.verbose('unique message received')
       	const received_message = webhook_event.message
       	if (!received_message.is_echo) {
-          logger.info('webhook event object with message:',{ 'webhook_event': webhook_event});
+          logger.verbose('webhook event object with message:',{ 'webhook_event': webhook_event});
   	      if (!received_message.quick_reply) {
   	    		processReceivedMessageText(logger, sender_psid, received_message.text);
   	      } else {
@@ -52,7 +48,7 @@ function receive(logger, req, res,
   	      }
         }
       } else if (webhook_event.postback) {
-        logger.info('webhook event object with postback:',{ 'webhook_event': webhook_event});
+        logger.verbose('webhook event object with postback:',{ 'webhook_event': webhook_event});
         processReceivedPostback(logger, sender_psid, webhook_event.postback.payload);
       }
     }

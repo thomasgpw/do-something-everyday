@@ -174,7 +174,31 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
   } else {
     for(let i = 0; i < SCRIPT.length; i++) {
       if (status == SCRIPT[i].status) {
-        requestMongoData(logger, sender_psid, SCRIPT[i])
+        const script_entry = SCRIPT[i];
+        const data_tags = script_entry.response.message.text.match(/\/([A-Z]+)\//g)
+        if (data_tags) {
+          const tags = {
+            name: data_tags.includes('/NAME/'),
+            goal: data_tags.includes('/GOAL/')
+              ? data_tags.reduce((n, x) => { n + (x === '/GOAL/')})
+              : false,
+            hobby: data_tags.includes('/HOBBY/')
+              ? data_tags.reduce((n, x) => { n + (x === '/HOBBY/')})
+              : false,
+            supporter: data_tags.includes('/SUPPORTER/')
+              ? data_tags.reduce((n, x) => { n + (x === '/SUPPORTER/')})
+              : false
+          }
+          DatabaseManager.getByTags(logger, sender_psid, script_entry, tags, useMongoData)
+        } else {
+          FacebookMessengerManager.callSendAPI(
+            logger,
+            sender_psid,
+            script_entry.response,
+            script_entry.next_status,
+            processReceivedPostback
+          )
+        }
       }
     }
   }
@@ -191,34 +215,28 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
  * @param {JSON Object} script_entry - the JSON Object with the next message to
  *     send that is being 
  */
-function requestMongoData(logger, sender_psid, script_entry) {
-  logger.info(
-    'AppManager.requestMongoData',
-    {message_text: script_entry.response.message.text}
-  )
-  const _TAG_REFERENCE = {
-    '/NAME/': 'getName',
-    '/GOAL/': 'getGoal',
-    '/HOBBY/': 'getHobby',
-    '/SUPPORTER/': 'getSupporter'
-  }
-  const data_tag = script_entry.response.message.text.match(/\/([A-Z]+)\//g);
-  if (data_tag) {
-    DatabaseManager[_TAG_REFERENCE[data_tag]](
-      logger,
-      sender_psid,
-      script_entry,
-      useMongoData
-    )
-  } else {
-    FacebookMessengerManager.callSendAPI(
-      logger,
-      sender_psid,
-      script_entry.response,
-      script_entry.next_status,
-      processReceivedPostback
-    )
-  }
+function requestMongoData(logger, sender_psid, script_entry, tags) {
+  // logger.info(
+  //   'AppManager.requestMongoData',
+  //   {message_text: script_entry.response.message.text, tags: tags}
+  // )
+  // const data_tag = script_entry.response.message.text.match(/\/([A-Z]+)\//g);
+  // if (data_tag) {
+  //   DatabaseManager[_TAG_REFERENCE[data_tag]](
+  //     logger,
+  //     sender_psid,
+  //     script_entry,
+  //     useMongoData
+  //   )
+  // } else {
+  //   FacebookMessengerManager.callSendAPI(
+  //     logger,
+  //     sender_psid,
+  //     script_entry.response,
+  //     script_entry.next_status,
+  //     processReceivedPostback
+  //   )
+  // }
 }
 
 /**

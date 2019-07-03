@@ -21,18 +21,16 @@ mongoose.connect(MONGODB_URI);
  *     updating the UserDoc status
  */
 function updateStatus(logger, sender_psid, status, getPostbackScriptResponse) {
-  if (sender_psid != process.env.APP_PSID) {
-    logger.info('DatabaseManager.updateStatus')
-    const query = {user_id: sender_psid};
-    const update = {status: status};
-    // true if status is INIT_0, this makes a new document for the sender
-    const options = {upsert: status === 'INIT_0'};
+  logger.info('DatabaseManager.updateStatus')
+  const query = {user_id: sender_psid};
+  const update = {status: status};
+  // true if status is INIT_0, this makes a new document for the sender
+  const options = {upsert: status === 'INIT_0'};
 
-    UserDoc.findOneAndUpdate(query, update, options).exec((err, userDoc) => {
-      logger.info('DatabaseManager.updateStatus.UserDoc.findOneAndUpdate.exec');
-      getPostbackScriptResponse(logger, sender_psid, status)
-    })
-  }
+  UserDoc.findOneAndUpdate(query, update, options).exec((err, userDoc) => {
+    logger.info('DatabaseManager.updateStatus.UserDoc.findOneAndUpdate.exec');
+    getPostbackScriptResponse(logger, sender_psid, status)
+  })
 }
 
 /**
@@ -47,15 +45,13 @@ function updateStatus(logger, sender_psid, status, getPostbackScriptResponse) {
  *     updating the UserDoc status
  */
 function updateName(logger, sender_psid, preferred_name, status, getPostbackScriptResponse) {
-  if (sender_psid != process.env.APP_PSID) {
-    logger.info('DatabaseManager.updateName')
-    const query = {user_id: sender_psid};
-    const update = {status: status, name: preferred_name};
-    UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
-      logger.info('DatabaseManager.updateName.UserDoc.findOneAndUpdate.exec');
-      getPostbackScriptResponse(logger, sender_psid, status)
-    })
-  }
+  logger.info('DatabaseManager.updateName')
+  const query = {user_id: sender_psid};
+  const update = {status: status, name: preferred_name};
+  UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
+    logger.info('DatabaseManager.updateName.UserDoc.findOneAndUpdate.exec');
+    getPostbackScriptResponse(logger, sender_psid, status)
+  })
 }
 
 /**
@@ -70,15 +66,13 @@ function updateName(logger, sender_psid, preferred_name, status, getPostbackScri
  *     updating the UserDoc status
  */
 function addGoal(logger, sender_psid, goal, status, getPostbackScriptResponse) {
-  if (sender_psid != process.env.APP_PSID) {
-    logger.info('DatabaseManager.addGoal')
-    const query = {user_id: sender_psid};
-    const update = {status: status, $addToSet : {goals: {name: goal, progress: 0, trend: 0}}};
-    UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
-      logger.info('DatabaseManager.addGoal.UserDoc.findOneAndUpdate.exec');
-      getPostbackScriptResponse(logger, sender_psid, status)
-    })
-  }
+  logger.info('DatabaseManager.addGoal')
+  const query = {user_id: sender_psid};
+  const update = {status: status, $addToSet : {goals: {name: goal, progress: 0, trend: 0}}};
+  UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
+    logger.info('DatabaseManager.addGoal.UserDoc.findOneAndUpdate.exec');
+    getPostbackScriptResponse(logger, sender_psid, status)
+  })
 }
 
 /**
@@ -93,15 +87,13 @@ function addGoal(logger, sender_psid, goal, status, getPostbackScriptResponse) {
  *     updating the UserDoc status
  */
 function addHobby(logger, sender_psid, hobby, status, getPostbackScriptResponse) {
-  if (sender_psid != process.env.APP_PSID) {
-    logger.info('DatabaseManager.addHobby')
-    const query = {user_id: sender_psid};
-    const update = {status: status, $addToSet : {hobbies: {name: hobby, progress: 0, trend: 0}}};
-    UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
-      logger.info('DatabaseManager.addHobby.UserDoc.findOneAndUpdate.exec');
-      getPostbackScriptResponse(logger, sender_psid, status)
-    })
-  }
+  logger.info('DatabaseManager.addHobby')
+  const query = {user_id: sender_psid};
+  const update = {status: status, $addToSet : {hobbies: {name: hobby, progress: 0, trend: 0}}};
+  UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
+    logger.info('DatabaseManager.addHobby.UserDoc.findOneAndUpdate.exec');
+    getPostbackScriptResponse(logger, sender_psid, status)
+  })
 }
 
 /**
@@ -116,69 +108,74 @@ function addHobby(logger, sender_psid, hobby, status, getPostbackScriptResponse)
  *     updating the UserDoc status
  */
 function addSupport(logger, sender_psid, supporter, status, getPostbackScriptResponse) {
-  if (sender_psid != process.env.APP_PSID) {
-    logger.info('DatabaseManager.addSupport')
-    const query = {user_id: sender_psid};
-    const update = {status: status, $addToSet : {supporters: {name: supporter, progress: 0, trend: 0}}};
-    UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
-      logger.info('DatabaseManager.addSupport.UserDoc.findOneAndUpdate.exec');
-      getPostbackScriptResponse(logger, sender_psid, status)
-    })
-  }
+  logger.info('DatabaseManager.addSupport')
+  const query = {user_id: sender_psid};
+  const update = {status: status, $addToSet : {supporters: {name: supporter, progress: 0, trend: 0}}};
+  UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
+    logger.info('DatabaseManager.addSupport.UserDoc.findOneAndUpdate.exec');
+    getPostbackScriptResponse(logger, sender_psid, status)
+  })
 }
 
 // For devpage only
 function getAll(logger, sender_psid, res, callback) {
-  if (sender_psid != process.env.APP_PSID) {
-    logger.info('DatabaseManager.getAll')
-    const query = {user_id: sender_psid};
-    UserDoc.findOne(query).exec((err, userDoc) => {
-      logger.info('UserDoc.findOne.exec get all attributes from db:');
-      callback(logger, sender_psid, res, userDoc);
-    })
-  }
+  logger.info('DatabaseManager.getAll')
+  const query = {user_id: sender_psid};
+  UserDoc.findOne(query).exec((err, userDoc) => {
+    logger.info('UserDoc.findOne.exec get all attributes from db:');
+    callback(logger, sender_psid, res, userDoc);
+  })
 }
 
 function getStatus(logger, sender_psid, callback, received_message_text) {
-  if (sender_psid != process.env.APP_PSID) {
-    logger.info('DatabaseManager.getStatus')
-    const query = {user_id: sender_psid};
-    UserDoc.findOne(query, {status: 1}).exec((err, userDoc) => {
-      logger.info('DatabaseManager.getStatus.UserDoc.findOne.exec');
-      callback(logger, sender_psid, userDoc.status, received_message_text);
-    })
-  }
+  logger.info('DatabaseManager.getStatus')
+  const query = {user_id: sender_psid};
+  UserDoc.findOne(query, {status: 1}).exec((err, userDoc) => {
+    logger.info('DatabaseManager.getStatus.UserDoc.findOne.exec');
+    callback(logger, sender_psid, userDoc.status, received_message_text);
+  })
 }
 
 function getName(logger, sender_psid, script_entry, useMongoData) {
-  if (sender_psid != process.env.APP_PSID) {
-    logger.info('DatabaseManager.getName')
-    const query = {user_id: sender_psid};
-    UserDoc.findOne(query, {name: 1}).exec((err, userDoc) => {
-      logger.info('DatabaseManager.getName.UserDoc.findOne.exec');
-      useMongoData(logger, sender_psid, script_entry, userDoc);
-    })
-  }
+  logger.info('DatabaseManager.getName')
+  const query = {user_id: sender_psid};
+  UserDoc.findOne(query, {name: 1}).exec((err, userDoc) => {
+    logger.info('DatabaseManager.getName.UserDoc.findOne.exec');
+    useMongoData(logger, sender_psid, script_entry, userDoc);
+  })
 }
 
 function getGoal(logger, sender_psid, script_entry, useMongoData) {
-  if (sender_psid != process.env.APP_PSID) {
-    logger.info('DatabaseManager.getGoal')
-    const query = {user_id: sender_psid};
-    if (options) {
-      if (options.name) {
-      const select = {goals: {$elemMatch: {'name': options.name}}}
-      } else {
-        logger.error('in getGoal the only supported option is .name', options)
-      }
+  logger.info('DatabaseManager.getGoal')
+  const query = {user_id: sender_psid};
+  if (options) {
+    if (options.name) {
+    const select = {goals: {$elemMatch: {'name': options.name}}}
     } else {
-      const select = {goals: {$sample: {size: 1}}}
+      logger.error('in getGoal the only supported option is .name', options)
     }
-    UserDoc.findOne(query, select).exec((err, userDoc) => {
-      logger.info('DatabaseManager.getGoal.UserDoc.findOne.exec');
-      useMongoData(logger, sender_psid, script_entry, userDoc);
-    })
+  } else {
+    const select = {goals: {$sample: {size: 1}}}
   }
+  UserDoc.findOne(query, select).exec((err, userDoc) => {
+    logger.info('DatabaseManager.getGoal.UserDoc.findOne.exec');
+    useMongoData(logger, sender_psid, script_entry, userDoc);
+  })
+}
+
+function getByTags(logger, sender_psid, script_entry, tags, useMongoData) {
+  logger.info('DatabaseManager.getByTags', {tags: tags})
+  const query = {user_id: sender_psid};
+  const select = {
+    name: tags.name,
+    goals: tags.goal ? {$sample: {size: tags.goal}} : false,
+    hobbys: tags.hobby ? {$sample: {size: tags.hobby}} : false,
+    supporters: tags.supporter ? {$sample: {size: tags.supporter}} : false,
+  }
+  UserDoc.findOne(query, select).exec((err, userDoc) => {
+    logger.info('DatabaseManager.getByTags.UserDoc.findOne.exec');
+    useMongoData(logger, sender_psid, script_entry, userDoc);
+  })
 }
 
 module.exports = {
@@ -189,5 +186,6 @@ module.exports = {
   'addSupport': addSupport,
   'getAll': getAll,
   'getStatus': getStatus,
-  'getName': getName
+  'getName': getName,
+  'getByTags': getByTags
 }
