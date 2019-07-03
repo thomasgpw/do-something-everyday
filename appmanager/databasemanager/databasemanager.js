@@ -167,10 +167,10 @@ function getByTags(logger, sender_psid, script_entry, tags, useMongoData) {
   logger.info('DatabaseManager.getByTags', {tags: tags})
   const query = {user_id: sender_psid};
   const select = {
-    name: tags.name,
-    goals: tags.goal ? {$sample: {size: tags.goal}} : false,
-    hobbys: tags.hobby ? {$sample: {size: tags.hobby}} : false,
-    supporters: tags.supporter ? {$sample: {size: tags.supporter}} : false,
+    name: tags.name ? 1 : undefined,
+    goals: tags.goal ? {$sample: {size: tags.goal}} : undefined,
+    hobbys: tags.hobby ? {$sample: {size: tags.hobby}} : undefined,
+    supporters: tags.supporter ? {$sample: {size: tags.supporter}} : undefined,
   }
   UserDoc.findOne(query, select).exec((err, userDoc) => {
     logger.info('DatabaseManager.getByTags.UserDoc.findOne.exec');
