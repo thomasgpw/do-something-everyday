@@ -161,7 +161,7 @@ function getName(logger, sender_psid, callback) {
   }
 }
 
-function getGoal(logger, sender_psid, callback, options) {
+function getGoal(logger, sender_psid, callback) {
   if (sender_psid != process.env.APP_PSID) {
     logger.info('DatabaseManager.getGoal')
     const query = {user_id: sender_psid};
@@ -179,17 +179,6 @@ function getGoal(logger, sender_psid, callback, options) {
       callback(logger, sender_psid, userDoc);
     })
   }
-}
-
-function byTag(logger, sender_psid, tag) {
-  logger.info('DatabaseManager.byTag', {'tag': tag})
-  const _TAG_REFERENCE = {
-    '/NAME/': getName
-  }
-  return _TAG_REFERENCE[tag](sender_psid, (sender_psid, userDoc) => {
-    logger.info('inside callback of _TAG_REFERENCE[tag] in byTag with userDoc', {'userDoc': userDoc})
-    return (sender_psid, userDoc)
-  }, logger)
 }
 
 module.exports = {

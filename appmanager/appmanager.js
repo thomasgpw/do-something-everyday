@@ -156,8 +156,8 @@ const toCamel = (s) => {
 };
 
 /**
- * Parses the new UserDoc status to wait for input or prepare the script
- *     message to send to FaceBookMessenger.CallSendAPI
+ * Parses the new UserDoc status to wait for input or send the script message to
+ *     getMongoData to be prepared
  *
  * @param {Winston} logger - the Winston logger
  * @param {string} sender_psid - the unique string that Facebook asociates and
@@ -174,31 +174,72 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
   } else {
     for(let i = 0; i < SCRIPT.length; i++) {
       if (status == SCRIPT[i].status) {
-        const script_entry = SCRIPT[i]
-        // const script_entry_response =
-        logger.debug('response text should be set equal to ' + script_entry.response.message.text)
-        const data_tags = script_entry.response.message.text.match(/\/([A-Z]+)\//g)
-        if (data_tags) {
-          // Where a function for getting specific fields from DatabaseKeeper should be
-        } else {
-          FacebookMessengerManager.callSendAPI(logger, sender_psid, script_entry.response, script_entry.next_status, processReceivedPostback)
-        }
+        requestMongoData(logger, sender_psid, SCRIPT[i])
       }
     }
   }
 }
 
 /**
- * Reads a script entry's next status to call processReceivedPostback
- *     if multiple messages should be chained.
+ * Checks if the script_response needs to be populated with user information, if
+ *     so, it calls the corresponding DatabaseManger function, otherwise it
+ *     calls FacebookMessengerManager.callSendAPI
+ *
+ * @param {Winston} logger - the Winston logger
+ * @param {string} sender_psid - the unique string that Facebook asociates and
+ *     provides with individual users who communicate with DSE.
+ * @param {JSON Object} script_entry - the JSON Object with the next message to
+ *     send that is being 
  */
-// function getSendAPINextStep(logger, sender_psid, statu) {
-//   if (!statu.includes('-')) {
-//     // Applies if we are now expecting to wait to receive input as a user typed message
-//   } else {
-//     processReceivedPostback(logger, sender_psid, statu)
-//   }
-// }
+function requestMongoData(logger, sender_psid, script_entry) {
+  logger.info(
+    'AppManager.requestMongoData',
+    {message_text: script_entry.response.message.text}
+  )
+  const _TAG_REFERENCE = {
+    '/NAME/': 'getName',
+    '/GOAL/': 'getGoal',
+    '/HOBBY/': 'getHobby',
+    '/SUPPORTER/': 'getSupporter'
+  }
+  const data_tag = script_entry.response.message.text.match(/\/([A-Z]+)\//g);
+  if (data_tag) {
+    DatabaseManager[_TAG_REFERENCE[data_tag]](
+      logger,
+      sender_psid,
+      script_entry,
+      useMongoData
+    )
+  } else {
+    FacebookMessengerManager.callSendAPI(
+      logger,
+      sender_psid,
+      script_entry.response,
+      script_entry.next_status,
+      processReceivedPostback
+    )
+  }
+}
+
+/**
+ * Decrypts the fetched data from the DatabaseManager and adds to the script
+ *     entry before calling getMongoData with the updated script_entry
+ *
+ * @param {Winston} logger - the Winston logger
+ * @param {string} sender_psid - the unique string that Facebook asociates and
+ *     provides with individual users who communicate with DSE.
+ * @param {JSON Object} script_entry - the JSON Object with the next message to
+ *     send that is being 
+ * @param {JSON Object?} userDoc - 
+ */
+function useMongoData(logger, sender_psid, script_entry, userDoc) {
+  logger.info('AppManager.useMongoData', {userDoc: userDoc});
+  const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
+  const real_name = simpleCrypto.decrypt(obj.name)
+  logger.info('in useName name is ' + real_name)
+  return real_name
+
+}
 
 /**
  * Sends a formatted string to callSendAPI which informs the user of DSE's
@@ -208,7 +249,9 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
  * @param {string} sender_psid - the unique string that Facebook asociates and
  *     provides with individual users who communicate with DSE
  */
-function sendHelp(logger, sender_psid) {}
+function sendHelp(logger, sender_psid) {
+  logger.info('AppManager.sendHelp')
+}
 
 /**
  * Parses the command string for a target doc or field to delete from the db
@@ -221,64 +264,9 @@ function sendHelp(logger, sender_psid) {}
  * @param {string} command - the string taken from received message text
  *     converted to lowercase
  */
-function confirmDelete(logger, sender_psid, command) {}
-
-
-
-
-/** OLD CONTROLLER LOGIC **/
-
-// function requestMongoData(sender_psid, dseEventObj, text_tags, callback) {
-//   logger.info('at requestMongoData function with response ' + dseEventObj.response.message.text, {'text_tags': text_tags}) 
-//   var tag_replacements = text_tags.slice(0)
-//   text_tags.forEach((tag, i) => {
-//     tag_replacements[i] = useName(sender_psid, DatabaseManager.byTag(logger, sender_psid, tag))
-//   })
-// }
-
-// function useName(sender_psid, obj) {
-//   const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
-//   const real_name = simpleCrypto.decrypt(obj.name)
-//   logger.info('in useName name is ' + real_name)
-//   return real_name
-// }
-
-// function runDSEEvent(sender_psid, status, userDoc) {
-//   logger.info('inside runDSEEvent callback')
-//   const dseEventObj = new DSEEventObject(logger, sender_psid, status)
-//   var response_text = dseEventObj.response.message.text
-//   if (text_tags) {
-//     requestMongoData(sender_psid, dseEventObj, text_tags, FacebookMessengerManager.callSendAPI)
-//   } else {
-//     FacebookMessengerManager.callSendAPI(logger, sender_psid, dseEventObj.response, dseEventObj.next_status)
-//   }
-// }
-// class DSEEventObject {
-//   constructor(logger, sender_psid, status) {
-//     logger.info('at DSEEventObject constructor from status ' + status)
-//     this._sender_psid = sender_psid
-//     this._jsonObj = getEventJSON(sender_psid, status)
-//   }
-//   get response() {
-//     return this._jsonObj.response
-//   }
-//   get next_status() {
-//     return this._jsonObj.next_status
-//   }
-//   get sender_psid() {
-//     return this._sender_psid
-//   }
-// }
-// function next_call(logger, next_status, callback){
-//   logger.info('in callback of request in callSendAPI next_status is ' + next_status)
-//   if (next_status.includes('-')) {
-//     // applies if we are now expecting to wait to receive input as a user typed message
-//     callback(logger, sender_psid, next_status)
-//   } else {
-//     // applies if chaining multiple messages without waiting
-//     processReceivedPostback(logger, sender_psid, next_status)
-//   }
-// }
+function confirmDelete(logger, sender_psid, command) {
+  logger.info('AppManager.confirmDelete')
+}
 
 module.exports = {
   'setUpApp': setUpApp
