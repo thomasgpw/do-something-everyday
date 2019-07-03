@@ -235,9 +235,8 @@ function requestMongoData(logger, sender_psid, script_entry) {
 function useMongoData(logger, sender_psid, script_entry, userDoc) {
   logger.info('AppManager.useMongoData', {userDoc: userDoc});
   const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
-  const real_name = simpleCrypto.decrypt(obj.name)
-  logger.info('in useName name is ' + real_name)
-  return real_name
+  // const real_name = simpleCrypto.decrypt(userDoc.name)
+  // logger.info('in useName name is ' + real_name)
 
 }
 
