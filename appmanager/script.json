@@ -206,7 +206,7 @@
 			}
 		},
 		{
-			"status": "INIT_3.2",
+			"status": "INIT_4",
 			"response": {
 				"messaging_type": "RESPONSE",
 				"message": {
