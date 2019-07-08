@@ -206,41 +206,6 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
 }
 
 /**
- * Checks if the script_response needs to be populated with user information, if
- *     so, it calls the corresponding DatabaseManger function, otherwise it
- *     calls FacebookMessengerManager.callSendAPI
- *
- * @param {Winston} logger - the Winston logger
- * @param {string} sender_psid - the unique string that Facebook asociates and
- *     provides with individual users who communicate with DSE.
- * @param {JSON Object} script_entry - the JSON Object with the next message to
- *     send that is being 
- */
-function requestMongoData(logger, sender_psid, script_entry, tags) {
-  // logger.info(
-  //   'AppManager.requestMongoData',
-  //   {message_text: script_entry.response.message.text, tags: tags}
-  // )
-  // const data_tag = script_entry.response.message.text.match(/\/([A-Z]+)\//g);
-  // if (data_tag) {
-  //   DatabaseManager[_TAG_REFERENCE[data_tag]](
-  //     logger,
-  //     sender_psid,
-  //     script_entry,
-  //     useMongoData
-  //   )
-  // } else {
-  //   FacebookMessengerManager.callSendAPI(
-  //     logger,
-  //     sender_psid,
-  //     script_entry.response,
-  //     script_entry.next_status,
-  //     processReceivedPostback
-  //   )
-  // }
-}
-
-/**
  * Decrypts the fetched data from the DatabaseManager and adds to the script
  *     entry before calling getMongoData with the updated script_entry
  *
@@ -249,7 +214,8 @@ function requestMongoData(logger, sender_psid, script_entry, tags) {
  *     provides with individual users who communicate with DSE.
  * @param {JSON Object} script_entry - the JSON Object with the next message to
  *     send that is being 
- * @param {JSON Object?} userDoc - 
+ * @param {JSON Object} userDoc - The object with the data fields returned from
+ *     DatabaseManager.getByTags
  */
 function useMongoData(logger, sender_psid, script_entry, userDoc) {
   logger.info('AppManager.useMongoData', {userDoc: userDoc});
