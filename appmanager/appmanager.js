@@ -117,9 +117,22 @@ function useStatus(logger, sender_psid, status, received_message_text) {
   logger.info('AppManager.useStatus')
   if (status.includes('-')) {
     const [databaseFunction, next_status] = status.split('-')
-    // if status is ADD_GOAL-CHECK_IN_3.2 then it should call
-    // DatabaseManager.addGoal(logger, sender_psid, received_message_text, 'CHECK_IN_3.2, processReceivedPostback')
-    DatabaseManager[toCamel(databaseFunction)](logger, sender_psid, received_message_text, next_status, processReceivedPostback)
+    /* if status is ADD_GOAL-CHECK_IN_3.2 then it should call
+    * DatabaseManager.addGoal(
+    *   logger,
+    *   sender_psid,
+    *   received_message_text,
+    *   'CHECK_IN_3.2',
+    *   processReceivedPostback
+    * )
+    */
+    DatabaseManager[toCamel(databaseFunction)](
+      logger,
+      sender_psid,
+      received_message_text,
+      next_status,
+      processReceivedPostback
+    )
   } else {
     // Input wasn't expected but was received
     // sendHelp(logger, sender_psid)
@@ -139,7 +152,12 @@ function useStatus(logger, sender_psid, status, received_message_text) {
  */
 function processReceivedPostback(logger, sender_psid, payload) {
   logger.info('AppManager.processReceivedPostback', {'payload': payload})
-  DatabaseManager.updateStatus(logger, sender_psid, payload, getPostbackScriptResponse)
+  DatabaseManager.updateStatus(
+    logger,
+    sender_psid,
+    payload,
+    getPostbackScriptResponse
+  )
 }
 
 /**
@@ -220,9 +238,43 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
 function useMongoData(logger, sender_psid, script_entry, userDoc) {
   logger.info('AppManager.useMongoData', {userDoc: userDoc});
   const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
-  // const real_name = simpleCrypto.decrypt(userDoc.name)
-  // logger.info('in useName name is ' + real_name)
-
+  if (userDoc.name) {
+    const real_name = simpleCrypto.decrypt(userDoc.name)
+    script_entry.response.replace('/NAME/', real_name)
+    logger.info('unencrypted name ' + real_name)
+  }
+  if (userDoc.goals) {
+    const real_goals = userDoc.map(goal => simpleCrypto.decrypt(goal))
+    for (real_goal in real_goals) {
+      script_entry.response.replace('/GOAL/', real_goal)
+      logger.info('unencrypted goal ' + real_goal)
+    }
+  }
+  if (userDoc.hobbies) {
+    const real_hobbies = userDoc.map(
+      hobby => simpleCrypto.decrypt(hobby)
+    )
+    for (real_hobby in real_hobbies) {
+      script_entry.response.replace('/HOBBY/', real_hobby)
+      logger.info('unencrypted hobby ' + real_hobby)
+    }
+  }
+  if (userDoc.supporters) {
+    const real_supporters = userDoc.map(
+      supporter => simpleCrypto.decrypt(supporter)
+    )
+    for (real_supporter in real_supporters) {
+      script_entry.response.replace('/SUPPORTER/', real_supporter)
+      logger.info('unencrypted supporter ' + real_supporter)
+    }
+  }
+  FacebookMessengerManager.callSendAPI(
+    logger,
+    sender_psid,
+    script_entry.response,
+    script_entry.next_status,
+    processReceivedPostback
+  )
 }
 
 /**
