@@ -1,219 +1,219 @@
 {
-	"script entries": [
-		{
-			"status": "INIT_0",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "Hi, thank you for trying out Do Something Everyday.  This bot is here to provide personal reminders to help you track if you do something everyday."
-				}
-			},
-			"next_status": "INIT_0.1"
-		},
-		{
-			"status": "INIT_0.1",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "I am very literal so please be brief when answering my questions.  With that in mind, what should I call you?"
-				}
-			},
-			"next_status": "UPDATE_NAME-INIT_0.2"
-		},
-		{
-			"status": "INIT_0.2",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "I should call you /NAME/?.",
-					"quick_replies": [
-						{
-							"content_type": "text",
-							"title": "Yes",
-							"payload": "INIT_0.3"
-						},
-						{
-							"content_type": "text",
-							"title": "No, let me change that.",
-							"payload": "INIT_0.1"
-						}
-					]
-				}
-			}
-		},
-		{
-			"status": "INIT_0.3",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "You got it /NAME/.  I've memorized that now. Any information you send to me stored. Thomas encrypted any data I get so he wont accidentally see it and he promises it will stay that way."
-				}
-			},
-			"next_status": "INIT_1"
-		},
-		{
-			"status": "INIT_1",
-			"response": {
-				"message": {
-					"text": "So, what have you been working on lately?"
-				}
-			},
-			"next_status": "ADD_GOAL-INIT_1.1"
-		},
-		{
-			"status": "INIT_1.1",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "Do you have other goals to work towards doing daily?",
-					"quick_replies": [
-						{
-							"content_type": "text",
-							"title": "Yes",
-							"payload": "INIT_1.2"
-						},
-						{
-							"content_type": "text",
-							"title": "Nope",
-							"payload": "INIT_2"
-						}
-					]
-				}
-			}
-		},
-		{
-			"status": "INIT_1.2",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "What else are you working on?"
-				}
-			},
-			"next_status": "ADD_GOAL-INIT_1.1"
-		},
-		{
-			"status": "INIT_2",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "What is something that consistently relaxes you?"
-				}
-			},
-			"next_status": "ADD_HOBBY-INIT_2.1"
-		},
-		{
-			"status": "INIT_2.1",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "Is there anything else that helps comfort you to do?",
-					"quick_replies": [
-						{
-							"content_type": "text",
-							"title": "Yes",
-							"payload": "INIT_2"
-						},
-						{
-							"content_type": "text",
-							"title": "Nope",
-							"payload": "INIT_3"
-						}
-					]
-				}
-			}
-		},
-		{
-			"status": "INIT_3",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "Do you have anyone who can check in on you if you're not doing well?",
-					"quick_replies": [
-						{
-							"content_type": "text",
-							"title": "Yes",
-							"payload": "INIT_3.2"
-						},
-						{
-							"content_type": "text",
-							"title": "Nope",
-							"payload": "INIT_3.1"
-						}
-					]
-				}
-			}
-		},
-		{
-			"status": "INIT_3.1",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "Well maybe that's something we can work on.  Would you like to add making connections as a goal?",
-					"quick_replies": [
-						{
-							"content_type": "text",
-							"title": "Yes",
-							"payload": "INIT_3.1.1"
-						},
-						{
-							"content_type": "text",
-							"title": "Nope",
-							"payload": "INIT_4"
-						}
-					]
-				}
-			}
-		},
-		{
-			"status": "INIT_3.1.1",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "Great, I'll add making connections to our list of your goals"
-				}
-			},
-			"next_status": "ADD_GOAL-CHECK_IN_0"
-		},
-		{
-			"status": "INIT_3.2",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "What's their name?"
-				}
-			},
-			"next_status": "ADD_SUPPORT-INIT_3.2.1"
-		},
-		{
-			"status": "INIT_3.2.1",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "Is there anyone else you can get support from when you need it?",
-					"quick_replies": [
-						{
-							"content_type": "text",
-							"title": "Yes",
-							"payload": "INIT_3.2"
-						},
-						{
-							"content_type": "text",
-							"title": "Nope",
-							"payload": "INIT_4"
-						}
-					]
-				}
-			}
-		},
-		{
-			"status": "INIT_4",
-			"response": {
-				"messaging_type": "RESPONSE",
-				"message": {
-					"text": "Thank you, that's all I need.  Let's get started!"
-				}
-			},
-			"next_status": "CHECK_IN_0"
-		}
-	]
+  "script entries": [
+    {
+      "status": "INIT_0",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "Hi, thank you for trying out Do Something Everyday.  This bot is here to provide personal reminders to help you track if you do something everyday."
+        }
+      },
+      "next_status": "INIT_0.1"
+    },
+    {
+      "status": "INIT_0.1",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "I am very literal so please be brief when answering my questions.  With that in mind, what should I call you?"
+        }
+      },
+      "next_status": "UPDATE_NAME-INIT_0.2"
+    },
+    {
+      "status": "INIT_0.2",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "I should call you /NAME/?.",
+          "quick_replies": [
+            {
+              "content_type": "text",
+              "title": "Yes",
+              "payload": "INIT_0.3"
+            },
+            {
+              "content_type": "text",
+              "title": "No, let me change that.",
+              "payload": "INIT_0.1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "status": "INIT_0.3",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "You got it /NAME/.  I've memorized that now. Any information you send to me stored. Thomas encrypted any data I get so he wont accidentally see it and he promises it will stay that way."
+        }
+      },
+      "next_status": "INIT_1"
+    },
+    {
+      "status": "INIT_1",
+      "response": {
+        "message": {
+          "text": "So, what have you been working on lately?"
+        }
+      },
+      "next_status": "ADD_GOAL-INIT_1.1"
+    },
+    {
+      "status": "INIT_1.1",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "Do you have other goals to work towards doing daily?",
+          "quick_replies": [
+            {
+              "content_type": "text",
+              "title": "Yes",
+              "payload": "INIT_1.2"
+            },
+            {
+              "content_type": "text",
+              "title": "Nope",
+              "payload": "INIT_2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "status": "INIT_1.2",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "What else are you working on?"
+        }
+      },
+      "next_status": "ADD_GOAL-INIT_1.1"
+    },
+    {
+      "status": "INIT_2",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "What is something that consistently relaxes you?"
+        }
+      },
+      "next_status": "ADD_JOY-INIT_2.1"
+    },
+    {
+      "status": "INIT_2.1",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "Is there anything else that helps comfort you to do?",
+          "quick_replies": [
+            {
+              "content_type": "text",
+              "title": "Yes",
+              "payload": "INIT_2"
+            },
+            {
+              "content_type": "text",
+              "title": "Nope",
+              "payload": "INIT_3"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "status": "INIT_3",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "Do you have anyone who can check in on you if you're not doing well?",
+          "quick_replies": [
+            {
+              "content_type": "text",
+              "title": "Yes",
+              "payload": "INIT_3.1"
+            },
+            {
+              "content_type": "text",
+              "title": "Nope",
+              "payload": "INIT_3.2"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "status": "INIT_3.1",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "What's their name?"
+        }
+      },
+      "next_status": "ADD_SUPPORT-INIT_3.1.1"
+    },
+    {
+      "status": "INIT_3.1.1",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "Is there anyone else you can get support from when you need it?",
+          "quick_replies": [
+            {
+              "content_type": "text",
+              "title": "Yes",
+              "payload": "INIT_3.1"
+            },
+            {
+              "content_type": "text",
+              "title": "Nope",
+              "payload": "INIT_4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "status": "INIT_3.2",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "Well maybe that's something you could work on.  Would you like to add making connections as a goal?",
+          "quick_replies": [
+            {
+              "content_type": "text",
+              "title": "Yes",
+              "payload": "INIT_3.2.1"
+            },
+            {
+              "content_type": "text",
+              "title": "Nope",
+              "payload": "INIT_4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "status": "INIT_3.2.1",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "Great, I'll add making connections to our list of your goals"
+        }
+      },
+      "next_status": "ADD_GOAL(Make a connection)-INIT_4"
+    },
+    {
+      "status": "INIT_4",
+      "response": {
+        "messaging_type": "RESPONSE",
+        "message": {
+          "text": "Thank you, that's all I need.  Let's get started!"
+        }
+      },
+      "next_status": "CHECK_IN_0"
+    }
+  ]
 }

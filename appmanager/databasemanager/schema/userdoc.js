@@ -15,7 +15,7 @@ const UserDocSchema = new Schema({
   	progress: { type: Number, required: true },
   	trend: { type: Number, required: true }
   }],
-  hobbies: [{
+  joys: [{
   	name: { type: String, unique: true },
   	progress: { type: Number, required: true },
     trend: { type: Number, required: true }

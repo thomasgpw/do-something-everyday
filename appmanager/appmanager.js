@@ -95,10 +95,7 @@ function processReceivedMessageText(logger, sender_psid, received_message_text) 
       processEscapeCommand(logger, sender_psid, text_lower)
     }
   } else {
-    const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
-    const encrypted_text = simpleCrypto.encrypt(received_message_text)
-    logger.debug({'encrypted_text': encrypted_text});
-    DatabaseManager.getStatus(logger, sender_psid, useStatus, encrypted_text)
+    DatabaseManager.getStatus(logger, sender_psid, received_message_text, useStatus)
   }
 }
 
@@ -115,21 +112,24 @@ function processReceivedMessageText(logger, sender_psid, received_message_text) 
  */
 function useStatus(logger, sender_psid, status, received_message_text) {
   logger.info('AppManager.useStatus')
+  const simpleCrypto = new SimpleCrypto(sender_psid+'DSE')
+  const encrypted_text = simpleCrypto.encrypt(received_message_text)
+  logger.debug({'encrypted_text': encrypted_text});
   if (status.includes('-')) {
-    const [databaseFunction, next_status] = status.split('-')
+    const [database_function, next_status] = status.split('-')
     /* if status is ADD_GOAL-CHECK_IN_3.2 then it should call
     * DatabaseManager.addGoal(
     *   logger,
     *   sender_psid,
-    *   received_message_text,
+    *   encrypted_text,
     *   'CHECK_IN_3.2',
     *   processReceivedPostback
     * )
     */
-    DatabaseManager[toCamel(databaseFunction)](
+    DatabaseManager[toCamel(database_function)](
       logger,
       sender_psid,
-      received_message_text,
+      encrypted_text,
       next_status,
       processReceivedPostback
     )
@@ -189,7 +189,16 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
     status: status
   })
   if (status.includes('-')) {
-    logger.debug('the status requests user input before another event in script.json')
+    /* PUT IN CHECK FOR IS PARAMETER IS PROVIDED (EX. 'ADD_GOAL(Make a connection)-INIT_4') */
+    if (status.includes('(')) {
+      const [full_string, database_function, status_parameter, next_status] = status.match(/(.*)(?:\()(.*)(?:\)-)(.*)/);
+      delete full_string;
+      const status = database_function + '-' + next_status;
+      useStatus(logger, sender_psid, status, status_parameter);
+    }
+    else {
+      logger.debug('the status requests user input before another event in script.json')
+    }
   } else {
     for(let i = 0; i < SCRIPT.length; i++) {
       if (status == SCRIPT[i].status) {
@@ -201,8 +210,8 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
             goal: data_tags.includes('/GOAL/')
               ? data_tags.reduce((n, x) => { n + (x === '/GOAL/')})
               : false,
-            hobby: data_tags.includes('/HOBBY/')
-              ? data_tags.reduce((n, x) => { n + (x === '/HOBBY/')})
+            joy: data_tags.includes('/JOY/')
+              ? data_tags.reduce((n, x) => { n + (x === '/JOY/')})
               : false,
             supporter: data_tags.includes('/SUPPORTER/')
               ? data_tags.reduce((n, x) => { n + (x === '/SUPPORTER/')})
@@ -251,13 +260,13 @@ function useMongoData(logger, sender_psid, script_entry, userDoc) {
       logger.info('unencrypted goal ' + real_goal)
     }
   }
-  if (userDoc.hobbies) {
-    const real_hobbies = userDoc.map(
-      hobby => simpleCrypto.decrypt(hobby)
+  if (userDoc.joys) {
+    const real_joys = userDoc.map(
+      joy => simpleCrypto.decrypt(joy)
     )
-    for (real_hobby in real_hobbies) {
-      message_text = message_text.replace('/HOBBY/', real_hobby)
-      logger.info('unencrypted hobby ' + real_hobby)
+    for (real_joy in real_joys) {
+      message_text = message_text.replace('/JOY/', real_joy)
+      logger.info('unencrypted joy ' + real_joy)
     }
   }
   if (userDoc.supporters) {
