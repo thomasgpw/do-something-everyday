@@ -192,6 +192,7 @@ function getPostbackScriptResponse(logger, sender_psid, status) {
     /* PUT IN CHECK FOR IS PARAMETER IS PROVIDED (EX. 'ADD_GOAL(Make a connection)-INIT_4') */
     if (status.includes('(')) {
       const [full_string, database_function, status_parameter, next_status] = status.match(/(.*)(?:\()(.*)(?:\)-)(.*)/);
+      logger.info(full_string, database_function, status_parameter, next_status)
       delete full_string;
       const status = database_function + '-' + next_status;
       useStatus(logger, sender_psid, status, status_parameter);
