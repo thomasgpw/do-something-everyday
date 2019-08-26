@@ -1,4 +1,4 @@
-#ABOUT#
+# ABOUT
 Do Something Everyday (DSE) is an automated tool for reinforcing goal striving behavior and
 tracking the specific goal of doing something everyday. The skill of goal striving is directly
 linked to positive feelings of wellbeing. External intervention is proven to be effective as
