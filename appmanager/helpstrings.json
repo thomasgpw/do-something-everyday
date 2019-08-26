@@ -3,7 +3,7 @@
       "response": {
         "messaging_type": "RESPONSE",
         "message": {
-          "text": "DSE- For more information please go to https://do-something-everyday.herokuapp.com\nCommands-\nHELP-\n\tIf the word help is used in any message sent to DSE, this message will be sent.\nDELETE-\n\tIf DSE receives the message 'DELETE <options>', then DSE will confirm your intention and delete that data from its database.\nLegal options are\n\tUSER, ME, or ALL- Any of these will delete the user's entire database record\n\tNAME- This will delete the user's preferred name and ask for a new one\n\t GOAL <name>- This will delete the goal with the name <name> from the user's list of goals\n\t JOY <name>- This will delete the joy with the name <name> from the user's list of joys\n\t SUPPORTER or SUPPORT <name>- This will delete the supporter with the name <name> from the user's list of supporters"
+          "text": "DSE- For more information please go to https://do-something-everyday.herokuapp.com\nCommands-\nHELP-\n\tIf the word help is used in any message sent to DSE, this message will be sent.\nDELETE-\n\tIf DSE receives the message 'DELETE <options>', then DSE will confirm your intention and delete that data from its database.\nLegal options are\n\tUSER, ME, or ALL- Any of these will delete the user's entire database record\n\tNAME- This will delete the user's preferred name and ask for a new one\n\t GOAL <name>- This will delete the goal with the name <name> from the user's list of goals\n\t HOBBY <name>- This will delete the hobby with the name <name> from the user's list of hobbies\n\t SUPPORTER or SUPPORT <name>- This will delete the supporter with the name <name> from the user's list of supporters"
         }
       }
     }

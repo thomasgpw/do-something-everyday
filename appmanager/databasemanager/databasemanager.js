@@ -76,22 +76,22 @@ function addGoal(logger, sender_psid, goal, status, getPostbackScriptResponse) {
 }
 
 /**
- * Adds a joy to a user's UserDoc joys.
+ * Adds a hobby to a user's UserDoc hobbies.
  *
  * @param {Winston} logger - the Winston logger
  * @param {string} sender_psid - the unique string that Facebook asociates and
  *     provides with individual users who communicate with DSE
- * @param {string} joy - the joy to add to UserDoc's list of joys
+ * @param {string} hobby - the hobby to add to UserDoc's list of hobbies
  * @param {string} status - the status to set as UserDoc's status
  * @param {Function} getPostbackScriptResponse - the function called after successfully
  *     updating the UserDoc status
  */
-function addJoy(logger, sender_psid, joy, status, getPostbackScriptResponse) {
-  logger.info('DatabaseManager.addJoy')
+function addHobby(logger, sender_psid, hobby, status, getPostbackScriptResponse) {
+  logger.info('DatabaseManager.addHobby')
   const query = {user_id: sender_psid};
-  const update = {status: status, $addToSet : {joys: {name: joy, progress: 0, trend: 0}}};
+  const update = {status: status, $addToSet : {hobbies: {name: hobby, progress: 0, trend: 0}}};
   UserDoc.findOneAndUpdate(query, update).exec((err, userDoc) => {
-    logger.info('DatabaseManager.addJoy.UserDoc.findOneAndUpdate.exec');
+    logger.info('DatabaseManager.addHobby.UserDoc.findOneAndUpdate.exec');
     getPostbackScriptResponse(logger, sender_psid, status)
   })
 }
@@ -127,12 +127,39 @@ function getAll(logger, sender_psid, res, callback) {
   })
 }
 
-function getStatus(logger, sender_psid, received_message_text, useStatus) {
+function getStatus(logger, sender_psid, callback, received_message_text) {
   logger.info('DatabaseManager.getStatus')
   const query = {user_id: sender_psid};
   UserDoc.findOne(query, {status: 1}).exec((err, userDoc) => {
     logger.info('DatabaseManager.getStatus.UserDoc.findOne.exec');
-    useStatus(logger, sender_psid, userDoc.status, received_message_text);
+    callback(logger, sender_psid, userDoc.status, received_message_text);
+  })
+}
+
+function getName(logger, sender_psid, script_entry, useMongoData) {
+  logger.info('DatabaseManager.getName')
+  const query = {user_id: sender_psid};
+  UserDoc.findOne(query, {name: 1}).exec((err, userDoc) => {
+    logger.info('DatabaseManager.getName.UserDoc.findOne.exec');
+    useMongoData(logger, sender_psid, script_entry, userDoc);
+  })
+}
+
+function getGoal(logger, sender_psid, script_entry, useMongoData) {
+  logger.info('DatabaseManager.getGoal')
+  const query = {user_id: sender_psid};
+  if (options) {
+    if (options.name) {
+    const select = {goals: {$elemMatch: {'name': options.name}}}
+    } else {
+      logger.error('in getGoal the only supported option is .name', options)
+    }
+  } else {
+    const select = {goals: {$sample: {size: 1}}}
+  }
+  UserDoc.findOne(query, select).exec((err, userDoc) => {
+    logger.info('DatabaseManager.getGoal.UserDoc.findOne.exec');
+    useMongoData(logger, sender_psid, script_entry, userDoc);
   })
 }
 
@@ -142,11 +169,11 @@ function getByTags(logger, sender_psid, script_entry, tags, useMongoData) {
   const select = {
     name: tags.name ? 1 : false,
     goals: tags.goal ? {$sample: {size: tags.goal}} : false,
-    joys: tags.joy ? {$sample: {size: tags.joy}} : false,
+    hobbies: tags.hobby ? {$sample: {size: tags.hobby}} : false,
     supporters: tags.supporter ? {$sample: {size: tags.supporter}} : false,
   }
   if (!select.goals) {delete select.goals};
-  if (!select.joys) {delete select.joys};
+  if (!select.hobbies) {delete select.hobbies};
   if (!select.supporters) {delete select.supporters};
   logger.info('the select projector', {select})
   UserDoc.findOne(query, select).exec((err, userDoc) => {
@@ -159,9 +186,10 @@ module.exports = {
   'updateStatus': updateStatus,
   'updateName': updateName,
   'addGoal': addGoal,
-  'addJoy': addJoy,
+  'addHobby': addHobby,
   'addSupport': addSupport,
   'getAll': getAll,
   'getStatus': getStatus,
+  'getName': getName,
   'getByTags': getByTags
 }
